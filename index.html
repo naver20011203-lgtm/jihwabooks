@@ -5335,6 +5335,21 @@
       justify-content: flex-start;
     }
 
+    /* 독서 모드: 처음 펼침면 우측 페이지 중앙 비밀 메모 그래픽 */
+    .scene-reader .book-page-memo {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 480px;
+      width: auto;
+      max-width: 86%;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 5;
+      filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.45));
+    }
+
     .scene-reader .book-page-img {
       height: 760px;
       width: auto;
@@ -8523,6 +8538,9 @@
     window.SCENES['reader'] = {
       isReader: true,
       mount(el, app) {
+        if (!window.MEMO_BOOK_ID) {
+          window.MEMO_BOOK_ID = Math.floor(Math.random() * 4) + 1;
+        }
         const bookIdx = window.CURRENT_BOOK_ID || 1;
         const BOOKS_DATA = {
           1: {
@@ -8570,6 +8588,7 @@
               </div>
               <div class="book-page book-page-right" style="display: flex;">
                 <img class="book-page-img" src="${currentBook.front}" alt="${currentBook.title} 앞표지">
+                <img class="book-page-memo" src="02_motions/book_memo.png" alt="메모" style="display: none;">
               </div>
               <div class="book-spine-crease"></div>
             </div>
@@ -8684,6 +8703,9 @@
             zoneRight.title = '';
 
             // 책척도 좌측 끝에 딱 맞게 정렬 (18px)
+            const memoEl = pageRightEl.querySelector('.book-page-memo');
+            if (memoEl) memoEl.style.display = 'none';
+
             progressFill.style.width = '18px';
 
             if (totalSpreads > 0) {
@@ -8710,6 +8732,9 @@
             zoneRight.title = '';
 
             // 책척도 우측 끝까지 100% 채움
+            const memoEl = pageRightEl.querySelector('.book-page-memo');
+            if (memoEl) memoEl.style.display = 'none';
+
             progressFill.style.width = '100%';
           } else {
             // [양쪽 펼침면 상태] (1 <= currentPage <= totalSpreads)
@@ -8723,6 +8748,15 @@
             pageRightImg.src = `${currentBook.pagePrefix}${rightNum}.png`;
             pageRightImg.alt = `${currentBook.title} ${rightNum}쪽`;
             if (creaseEl) creaseEl.style.display = 'block';
+
+            const memoEl = pageRightEl.querySelector('.book-page-memo');
+            if (memoEl) {
+              if (currentPage === 1 && bookIdx === (window.MEMO_BOOK_ID || 1)) {
+                memoEl.style.display = 'block';
+              } else {
+                memoEl.style.display = 'none';
+              }
+            }
 
             zoneLeft.classList.remove('disabled');
             zoneLeft.style.cursor = 'pointer';
@@ -11367,6 +11401,7 @@
 
       // ========== S1 파트 기동 ==========
       function launchS1(initialScene = 1) {
+        window.MEMO_BOOK_ID = Math.floor(Math.random() * 4) + 1;
         cleanupCurrentListeners();
         stopAllAudio();
         resetStageDom();
@@ -11395,6 +11430,11 @@
           jsToRun = jsToRun.replace(
             /goTo\(urlScene \|\| 1\);/g,
             'goTo(' + initialScene + ');'
+          );
+        } else if (typeof initialScene === 'string') {
+          jsToRun = jsToRun.replace(
+            /goTo\(urlScene \|\| 1\);/g,
+            "goTo('" + initialScene + "');"
           );
         }
         runScript(jsToRun);
