@@ -89,6 +89,10 @@
         } catch (e) {}
       }
 
+      window.isFullscreen = isFullscreen;
+      window.enterFullscreen = enterFullscreen;
+      window.exitFullscreen = exitFullscreen;
+
       let wheelExitCount = 0;
       let wheelExitTimer = null;
 
@@ -271,6 +275,18 @@
       z-index: 20;
       cursor: pointer;
     }
+
+    /* 대기화면: 좌측 녹색 글자 영역 (더블클릭 시 전체화면 / 프레젠테이션 모드 전환) */
+    .title-fullscreen-zone {
+      position: absolute;
+      left: 95px;
+      top: 80px;
+      width: 230px;
+      height: 870px;
+      z-index: 20;
+      cursor: pointer;
+    }
+
 
 
     @keyframes s01sway {
@@ -1134,6 +1150,18 @@
       cursor: pointer;
     }
 
+    /* 대기화면: 좌측 녹색 글자 영역 (더블클릭 시 전체화면 / 프레젠테이션 모드 전환) */
+    .title-fullscreen-zone {
+      position: absolute;
+      left: 95px;
+      top: 80px;
+      width: 230px;
+      height: 870px;
+      z-index: 20;
+      cursor: pointer;
+    }
+
+
 
     @keyframes s01sway {
       from { transform: rotate(var(--a)) translateZ(0); }
@@ -1845,6 +1873,7 @@
           <div class="flower f1"><img src="02_motions/01 Delphinium 1 (x979.08 y163.95)).png" alt=""></div>
           <div class="flower f2"><img src="02_motions/01 Delphinium 2 (x962.99 y425.21)).png" alt=""></div>
           <div class="flower f3"><img src="02_motions/01 Delphinium 3 (x998.87 y597.38)).png" alt=""></div>
+          <div class="title-fullscreen-zone" title="더블클릭: 프레젠테이션 모드(전체화면)"></div>
           <div class="title-trigger-shape" title="지화책방 들어가기"></div>
         `;
 
@@ -1860,6 +1889,19 @@
         };
 
         const triggerEl = el.querySelector('.title-trigger-shape');
+        const fsZone = el.querySelector('.title-fullscreen-zone');
+
+        const onFsDblClick = (e) => {
+          e.stopPropagation();
+          if (window.tryPlayBgm) window.tryPlayBgm();
+          if (window.enterFullscreen) {
+            if (window.isFullscreen && window.isFullscreen()) {
+              if (window.exitFullscreen) window.exitFullscreen();
+            } else {
+              window.enterFullscreen();
+            }
+          }
+        };
 
         const cleanup = () => {
           clearTimeout(armTimer);
@@ -1868,12 +1910,18 @@
             triggerEl.removeEventListener('pointermove', onTrigger);
             triggerEl.removeEventListener('pointerdown', onTrigger);
           }
+          if (fsZone) {
+            fsZone.removeEventListener('dblclick', onFsDblClick);
+          }
         };
 
         if (triggerEl) {
           triggerEl.addEventListener('pointerenter', onTrigger);
           triggerEl.addEventListener('pointermove', onTrigger);
           triggerEl.addEventListener('pointerdown', onTrigger);
+        }
+        if (fsZone) {
+          fsZone.addEventListener('dblclick', onFsDblClick);
         }
 
         return {
@@ -3764,6 +3812,18 @@
       z-index: 20;
       cursor: pointer;
     }
+
+    /* 대기화면: 좌측 녹색 글자 영역 (더블클릭 시 전체화면 / 프레젠테이션 모드 전환) */
+    .title-fullscreen-zone {
+      position: absolute;
+      left: 95px;
+      top: 80px;
+      width: 230px;
+      height: 870px;
+      z-index: 20;
+      cursor: pointer;
+    }
+
 
 
     @keyframes s01sway {
