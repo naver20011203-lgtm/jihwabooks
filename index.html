@@ -487,11 +487,11 @@
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
     
-    /* 2페이지부터(대기화면 1페이지 제외): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
-    .scene:not(.scene-01),
-    .stage:has(.scene:not(.scene-01)) {
-      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
-      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+    /* 대사가 시작되는 3장면('으으 추워... 저기인가?')부터: 별도 커서가 지정되지 않은 일반 영역에 커스텀 팔 커서 적용 (1~2장면은 기본 커서 유지) */
+    .scene:not(.scene-01):not(.scene-02),
+    .stage:has(.scene:not(.scene-01):not(.scene-02)) {
+      cursor: url('02_motions/custom_cursor.png') 9 9, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 9 9, url('02_motions/custom_cursor.png') 9 9, auto;
     }
     .scene-04,
     .scene-04 *,
@@ -1374,11 +1374,11 @@
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
     
-    /* 2페이지부터(대기화면 1페이지 제외): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
-    .scene:not(.scene-01),
-    .stage:has(.scene:not(.scene-01)) {
-      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
-      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+    /* 대사가 시작되는 3장면('으으 추워... 저기인가?')부터: 별도 커서가 지정되지 않은 일반 영역에 커스텀 팔 커서 적용 (1~2장면은 기본 커서 유지) */
+    .scene:not(.scene-01):not(.scene-02),
+    .stage:has(.scene:not(.scene-01):not(.scene-02)) {
+      cursor: url('02_motions/custom_cursor.png') 9 9, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 9 9, url('02_motions/custom_cursor.png') 9 9, auto;
     }
     .scene-04,
     .scene-04 *,
@@ -4154,11 +4154,11 @@
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
     
-    /* S2 전체(21페이지 이후 전역): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
+    /* S2 전체(21페이지 이후 전역): 별도 커서가 지정되지 않은 일반 영역에 커스텀 팔 커서 적용 */
     .scene,
     .stage {
-      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
-      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+      cursor: url('02_motions/custom_cursor.png') 9 9, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 9 9, url('02_motions/custom_cursor.png') 9 9, auto;
     }
     .scene-04,
     .scene-04 *,
