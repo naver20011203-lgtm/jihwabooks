@@ -208,6 +208,7 @@
       will-change: transform;
       backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
+      background-color: #000000;
     }
 
     .scene .bg {
@@ -1056,6 +1057,7 @@
       will-change: transform;
       backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
+      background-color: #000000;
     }
 
     .scene .bg {
@@ -3387,7 +3389,13 @@
           }, { once: true });
         } else {
           stage.appendChild(el);
-          if (prev) destroy(prev);
+          if (prev) {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                destroy(prev);
+              });
+            });
+          }
         }
 
         current = { n, el, scene: null };
@@ -3648,6 +3656,7 @@
       will-change: transform;
       backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
+      background-color: #000000;
     }
 
     .scene .bg {
@@ -3992,16 +4001,15 @@
       z-index: 45;
     }
 
-    /* ========== S2 전체 장면 공통 컬러 필터 레이어 (#E8CBFF, 50%, multiply) ========== */
+    /* ========== S2 전체 장면 공통 컬러 필터 레이어 (기본 투명화하여 27페이지 이후 뿌연 현상 제거) ========== */
     .scene-color-filter {
       position: absolute;
       left: 0;
       top: 0;
       width: 1366px;
       height: 1024px;
-      background-color: #E8CBFF;
-      opacity: 0.5;
-      mix-blend-mode: multiply;
+      background-color: transparent;
+      opacity: 0;
       pointer-events: none;
       z-index: 50; /* 대화창(z-index: 100) 바로 아래, 씬 내 그래픽/모션 요소 최상단 */
     }
@@ -11207,7 +11215,13 @@
           setTimeout(finishFade, 900); // 0.8s 페이드 안전 타이머
         } else {
           stage.appendChild(el);
-          if (prev) destroy(prev);
+          if (prev) {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                destroy(prev);
+              });
+            });
+          }
         }
 
         resetIdle();
