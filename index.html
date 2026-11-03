@@ -486,6 +486,19 @@
     }
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
+    
+    /* 2페이지부터(대기화면 1페이지 제외): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
+    .scene:not(.scene-01),
+    .stage:has(.scene:not(.scene-01)) {
+      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+    }
+    .scene-04,
+    .scene-04 *,
+    .scene-04 .door {
+      cursor: none !important;
+    }
+
     .scene-04 {
       cursor: none; /* 실제 마우스 커서 숨김 */
     }
@@ -1360,6 +1373,19 @@
     }
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
+    
+    /* 2페이지부터(대기화면 1페이지 제외): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
+    .scene:not(.scene-01),
+    .stage:has(.scene:not(.scene-01)) {
+      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+    }
+    .scene-04,
+    .scene-04 *,
+    .scene-04 .door {
+      cursor: none !important;
+    }
+
     .scene-04 {
       cursor: none; /* 실제 마우스 커서 숨김 */
     }
@@ -4127,6 +4153,19 @@
     }
 
     /* ========== 4장면: 노크 장면 (배경, 도어 슬라이드, arm 마우스 커서, 타이핑) ========== */
+    
+    /* S2 전체(21페이지 이후 전역): 별도 커서가 지정되지 않은 일반 영역에 피치 원형 커서 적용 */
+    .scene,
+    .stage {
+      cursor: url('02_motions/custom_cursor.png') 16 16, auto;
+      cursor: -webkit-image-set(url('02_motions/custom_cursor.png') 1x, url('02_motions/custom_cursor@2x.png') 2x) 16 16, url('02_motions/custom_cursor.png') 16 16, auto;
+    }
+    .scene-04,
+    .scene-04 *,
+    .scene-04 .door {
+      cursor: none !important;
+    }
+
     .scene-04 {
       cursor: none; /* 실제 마우스 커서 숨김 */
     }
@@ -5504,7 +5543,7 @@
     }
 
     .scene-reader .reader-zone.zone-left.disabled {
-      cursor: default;
+      cursor: inherit;
     }
 
     .scene-reader .reader-zone.zone-right {
@@ -5513,7 +5552,7 @@
     }
 
     .scene-reader .reader-zone.zone-right.disabled {
-      cursor: default;
+      cursor: inherit;
     }
 
     /* 화면 하단 중앙 '책척도 바' & '책척도' */
