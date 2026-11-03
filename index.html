@@ -260,6 +260,19 @@
     .f2 img, .flower.f2 img { --a: 6deg;    --b: -4deg; }
     .f3 img, .flower.f3 img { --a: -3.5deg; --b: 5.5deg; }
 
+    /* 대기화면: 좌측 글자 기준 오른쪽에 있는 '글이 쓰인 붉은 모양' 호버 반응 영역 */
+    .title-trigger-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1366px;
+      height: 1024px;
+      clip-path: polygon(545px 80px, 473px 105px, 446px 130px, 430px 155px, 421px 180px, 416px 205px, 416px 230px, 421px 255px, 431px 280px, 448px 305px, 436px 330px, 424px 355px, 417px 380px, 416px 405px, 419px 430px, 427px 455px, 440px 480px, 453px 505px, 434px 530px, 423px 555px, 417px 580px, 416px 605px, 419px 630px, 428px 655px, 442px 680px, 461px 705px, 439px 730px, 426px 755px, 418px 780px, 416px 805px, 418px 830px, 424px 855px, 437px 880px, 458px 905px, 494px 930px, 1136px 930px, 1172px 905px, 1193px 880px, 1205px 855px, 1212px 830px, 1214px 805px, 1211px 780px, 1204px 755px, 1191px 730px, 1169px 705px, 1187px 680px, 1202px 655px, 1211px 630px, 1214px 605px, 1213px 580px, 1207px 555px, 1195px 530px, 1177px 505px, 1189px 480px, 1203px 455px, 1211px 430px, 1214px 405px, 1212px 380px, 1206px 355px, 1194px 330px, 1182px 305px, 1198px 280px, 1209px 255px, 1213px 230px, 1214px 205px, 1209px 180px, 1199px 155px, 1183px 130px, 1156px 105px, 1084px 80px);
+      z-index: 20;
+      cursor: pointer;
+    }
+
+
     @keyframes s01sway {
       from { transform: rotate(var(--a)) translateZ(0); }
       to   { transform: rotate(var(--b)) translateZ(0); }
@@ -1109,6 +1122,19 @@
     .f2 img, .flower.f2 img { --a: 6deg;    --b: -4deg; }
     .f3 img, .flower.f3 img { --a: -3.5deg; --b: 5.5deg; }
 
+    /* 대기화면: 좌측 글자 기준 오른쪽에 있는 '글이 쓰인 붉은 모양' 호버 반응 영역 */
+    .title-trigger-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1366px;
+      height: 1024px;
+      clip-path: polygon(545px 80px, 473px 105px, 446px 130px, 430px 155px, 421px 180px, 416px 205px, 416px 230px, 421px 255px, 431px 280px, 448px 305px, 436px 330px, 424px 355px, 417px 380px, 416px 405px, 419px 430px, 427px 455px, 440px 480px, 453px 505px, 434px 530px, 423px 555px, 417px 580px, 416px 605px, 419px 630px, 428px 655px, 442px 680px, 461px 705px, 439px 730px, 426px 755px, 418px 780px, 416px 805px, 418px 830px, 424px 855px, 437px 880px, 458px 905px, 494px 930px, 1136px 930px, 1172px 905px, 1193px 880px, 1205px 855px, 1212px 830px, 1214px 805px, 1211px 780px, 1204px 755px, 1191px 730px, 1169px 705px, 1187px 680px, 1202px 655px, 1211px 630px, 1214px 605px, 1213px 580px, 1207px 555px, 1195px 530px, 1177px 505px, 1189px 480px, 1203px 455px, 1211px 430px, 1214px 405px, 1212px 380px, 1206px 355px, 1194px 330px, 1182px 305px, 1198px 280px, 1209px 255px, 1213px 230px, 1214px 205px, 1209px 180px, 1199px 155px, 1183px 130px, 1156px 105px, 1084px 80px);
+      z-index: 20;
+      cursor: pointer;
+    }
+
+
     @keyframes s01sway {
       from { transform: rotate(var(--a)) translateZ(0); }
       to   { transform: rotate(var(--b)) translateZ(0); }
@@ -1819,27 +1845,36 @@
           <div class="flower f1"><img src="02_motions/01 Delphinium 1 (x979.08 y163.95)).png" alt=""></div>
           <div class="flower f2"><img src="02_motions/01 Delphinium 2 (x962.99 y425.21)).png" alt=""></div>
           <div class="flower f3"><img src="02_motions/01 Delphinium 3 (x998.87 y597.38)).png" alt=""></div>
+          <div class="title-trigger-shape" title="지화책방 들어가기"></div>
         `;
 
-        // 진입 직후의 미세한 마우스 움직임은 무시
+        // 진입 직후의 마우스 오작동 방지
         let armed = false;
-        const armTimer = setTimeout(() => (armed = true), 600);
+        const armTimer = setTimeout(() => (armed = true), 400);
 
-        const onTrigger = () => {
+        const onTrigger = (e) => {
           if (window.tryPlayBgm) window.tryPlayBgm();
           if (!armed) return;
           cleanup();
           app.goTo(2, 'slideUp');
         };
 
+        const triggerEl = el.querySelector('.title-trigger-shape');
+
         const cleanup = () => {
           clearTimeout(armTimer);
-          removeEventListener('mousemove', onTrigger);
-          removeEventListener('pointerdown', onTrigger);
+          if (triggerEl) {
+            triggerEl.removeEventListener('pointerenter', onTrigger);
+            triggerEl.removeEventListener('pointermove', onTrigger);
+            triggerEl.removeEventListener('pointerdown', onTrigger);
+          }
         };
 
-        addEventListener('mousemove', onTrigger);
-        addEventListener('pointerdown', onTrigger);
+        if (triggerEl) {
+          triggerEl.addEventListener('pointerenter', onTrigger);
+          triggerEl.addEventListener('pointermove', onTrigger);
+          triggerEl.addEventListener('pointerdown', onTrigger);
+        }
 
         return {
           unmount: cleanup,
@@ -3717,6 +3752,19 @@
     .f1 img, .flower.f1 img { --a: -5deg;   --b: 4deg; }
     .f2 img, .flower.f2 img { --a: 6deg;    --b: -4deg; }
     .f3 img, .flower.f3 img { --a: -3.5deg; --b: 5.5deg; }
+
+    /* 대기화면: 좌측 글자 기준 오른쪽에 있는 '글이 쓰인 붉은 모양' 호버 반응 영역 */
+    .title-trigger-shape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1366px;
+      height: 1024px;
+      clip-path: polygon(545px 80px, 473px 105px, 446px 130px, 430px 155px, 421px 180px, 416px 205px, 416px 230px, 421px 255px, 431px 280px, 448px 305px, 436px 330px, 424px 355px, 417px 380px, 416px 405px, 419px 430px, 427px 455px, 440px 480px, 453px 505px, 434px 530px, 423px 555px, 417px 580px, 416px 605px, 419px 630px, 428px 655px, 442px 680px, 461px 705px, 439px 730px, 426px 755px, 418px 780px, 416px 805px, 418px 830px, 424px 855px, 437px 880px, 458px 905px, 494px 930px, 1136px 930px, 1172px 905px, 1193px 880px, 1205px 855px, 1212px 830px, 1214px 805px, 1211px 780px, 1204px 755px, 1191px 730px, 1169px 705px, 1187px 680px, 1202px 655px, 1211px 630px, 1214px 605px, 1213px 580px, 1207px 555px, 1195px 530px, 1177px 505px, 1189px 480px, 1203px 455px, 1211px 430px, 1214px 405px, 1212px 380px, 1206px 355px, 1194px 330px, 1182px 305px, 1198px 280px, 1209px 255px, 1213px 230px, 1214px 205px, 1209px 180px, 1199px 155px, 1183px 130px, 1156px 105px, 1084px 80px);
+      z-index: 20;
+      cursor: pointer;
+    }
+
 
     @keyframes s01sway {
       from { transform: rotate(var(--a)) translateZ(0); }
