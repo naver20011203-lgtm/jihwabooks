@@ -49,6 +49,88 @@
         window.addEventListener(ev, onBgmGesture, { passive: true, capture: true });
         document.addEventListener(ev, onBgmGesture, { passive: true, capture: true });
       });
+
+      // ========== 전체화면 전환 (휠 1회 클릭 진입 / 휠 2회 연속 클릭 복귀 / ESC 복귀) ==========
+      function isFullscreen() {
+        return !!(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        );
+      }
+
+      function enterFullscreen() {
+        const docEl = document.documentElement;
+        try {
+          if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(function () {});
+          } else if (docEl.webkitRequestFullscreen) {
+            docEl.webkitRequestFullscreen();
+          } else if (docEl.mozRequestFullScreen) {
+            docEl.mozRequestFullScreen();
+          } else if (docEl.msRequestFullscreen) {
+            docEl.msRequestFullscreen();
+          }
+        } catch (e) {}
+      }
+
+      function exitFullscreen() {
+        try {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().catch(function () {});
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+        } catch (e) {}
+      }
+
+      let wheelExitCount = 0;
+      let wheelExitTimer = null;
+
+      function onWheelClick(e) {
+        if (e.button !== 1) return; // 휠 클릭(가운데 버튼)만 감지
+        e.preventDefault(); // 브라우저 기본 자동스크롤 아이콘 표시 차단
+
+        if (!isFullscreen()) {
+          // 전체화면이 아닐 때: 휠 1번 클릭 시 즉시 전체화면 전환
+          enterFullscreen();
+        } else {
+          // 전체화면 상태일 때: 휠 2번 연속 클릭 시 전체화면 해제
+          wheelExitCount++;
+          clearTimeout(wheelExitTimer);
+          if (wheelExitCount >= 2) {
+            wheelExitCount = 0;
+            exitFullscreen();
+          } else {
+            wheelExitTimer = setTimeout(function () {
+              wheelExitCount = 0;
+            }, 600); // 600ms 이내에 두 번째 휠 클릭 시 해제
+          }
+        }
+      }
+
+      window.addEventListener('mousedown', onWheelClick, true);
+      window.addEventListener('auxclick', function (e) {
+        if (e.button === 1) e.preventDefault();
+      }, true);
+
+      // ESC 키 입력 시에도 언제든 전체화면 해제
+      window.addEventListener(
+        'keydown',
+        function (e) {
+          if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+            if (isFullscreen()) {
+              exitFullscreen();
+            }
+          }
+        },
+        true
+      );
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -5279,7 +5361,7 @@
     .scene-reader .reader-zone {
       position: absolute;
       top: 0;
-      bottom: 90px; /* 책척도 바 영역 침범 방지 */
+      bottom: 0;
       width: 50%;
       z-index: 30;
       user-select: none;
@@ -5290,6 +5372,10 @@
       cursor: pointer;
     }
 
+    .scene-reader .reader-zone.zone-left.disabled {
+      cursor: default;
+    }
+
     .scene-reader .reader-zone.zone-right {
       right: 0;
       cursor: pointer;
@@ -5297,7 +5383,6 @@
 
     .scene-reader .reader-zone.zone-right.disabled {
       cursor: default;
-      pointer-events: none;
     }
 
     /* 화면 하단 중앙 '책척도 바' & '책척도' */
@@ -8487,7 +8572,6 @@
                 <div class="reader-progress-hover"></div><div class="reader-progress-fill"></div>
               </div>
             </div>
-            </div>
             <div class="reader-exit-modal" style="display: none;">
               <div class="exit-modal-dialog">
                 <img class="exit-prompt-img" src="02_motions/book_exit_prompt.png" alt="이 책을 그만 읽으시겠습니까?">
@@ -8554,10 +8638,8 @@
         window.__READER_SHOW_EXIT_MODAL__ = () => {
           if (isModalOpen) {
             hideExitModal();
-          } else if (currentPage > 0) {
-            showExitModal();
           } else {
-            app.goTo(46, 'fade');
+            showExitModal();
           }
         };
 
@@ -8584,8 +8666,12 @@
             pageRightImg.alt = `${currentBook.title} 앞표지`;
             if (creaseEl) creaseEl.style.display = 'none';
 
+            zoneLeft.classList.add('disabled');
+            zoneLeft.style.cursor = 'default';
+            pageLeftEl.style.cursor = 'default';
             zoneRight.classList.remove('disabled');
             zoneRight.style.cursor = 'pointer';
+            pageRightEl.style.cursor = 'pointer';
             zoneLeft.title = '';
             zoneRight.title = '';
 
@@ -8605,9 +8691,13 @@
             pageRightEl.style.display = 'none';
             if (creaseEl) creaseEl.style.display = 'none';
 
-            // 뒷표지가 나오는 장면에서는 화면 오른쪽 클릭 반응 비활성화
+            // 뒷표지가 나오는 장면에서는 화면 오른쪽 클릭 반응 비활성화, 왼쪽 클릭은 이전 페이지로 가능
+            zoneLeft.classList.remove('disabled');
+            zoneLeft.style.cursor = 'pointer';
+            pageLeftEl.style.cursor = 'pointer';
             zoneRight.classList.add('disabled');
             zoneRight.style.cursor = 'default';
+            pageRightEl.style.cursor = 'default';
             zoneLeft.title = '';
             zoneRight.title = '';
 
@@ -8626,8 +8716,12 @@
             pageRightImg.alt = `${currentBook.title} ${rightNum}쪽`;
             if (creaseEl) creaseEl.style.display = 'block';
 
+            zoneLeft.classList.remove('disabled');
+            zoneLeft.style.cursor = 'pointer';
+            pageLeftEl.style.cursor = 'pointer';
             zoneRight.classList.remove('disabled');
             zoneRight.style.cursor = 'pointer';
+            pageRightEl.style.cursor = 'pointer';
 
             if (currentPage === 1) {
               zoneLeft.title = '';
@@ -8658,18 +8752,20 @@
 
         const onLeftClick = (e) => {
           if (e && e.button !== 0) return;
+          if (e && e.stopPropagation) e.stopPropagation();
           if (isModalOpen) return;
           if (currentPage === 0) {
-            // 책 표지 화면에서는 좌측 클릭해도 아무 반응 없음
+            // 책을 펼치기 전에는 화면의 왼쪽을 클릭해도 반응 없음
             return;
-          } else {
-            // 표지를 넘긴 이후부터는 좌클릭 시 나가기 확인 선택창 표시
-            showExitModal();
           }
+          // 책을 펼친 후에는 화면의 왼쪽을 클릭하면 책의 이전 장면으로 돌아감
+          currentPage--;
+          updateView();
         };
 
         const onRightClick = (e) => {
           if (e && e.button !== 0) return;
+          if (e && e.stopPropagation) e.stopPropagation();
           if (isModalOpen) return;
           if (currentPage >= totalSteps) {
             // 뒷표지가 나오는 장면에서는 화면 오른쪽 클릭 반응 비활성화
@@ -8677,6 +8773,21 @@
           }
           currentPage++;
           updateView();
+        };
+
+        // 전체 화면(stage) 클릭 위임: 책 페이지, 배경, 인터랙션 구역 어디를 누르든 즉각 감지
+        const onStageClick = (e) => {
+          if (e.button !== 0) return;
+          if (isModalOpen) return;
+          if (e.target.closest('.reader-exit-modal') || e.target.closest('.reader-progress-wrap')) return;
+
+          const rect = el.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          if (clickX < rect.width / 2) {
+            onLeftClick(e);
+          } else {
+            onRightClick(e);
+          }
         };
 
         const onKeyDown = (e) => {
@@ -8771,6 +8882,9 @@
 
         zoneLeft.addEventListener('click', onLeftClick);
         zoneRight.addEventListener('click', onRightClick);
+        pageLeftEl.addEventListener('click', onLeftClick);
+        pageRightEl.addEventListener('click', onRightClick);
+        el.addEventListener('click', onStageClick);
         window.addEventListener('keydown', onKeyDown);
 
         updateView();
@@ -8780,6 +8894,9 @@
             window.__READER_SHOW_EXIT_MODAL__ = null;
             zoneLeft.removeEventListener('click', onLeftClick);
             zoneRight.removeEventListener('click', onRightClick);
+            pageLeftEl.removeEventListener('click', onLeftClick);
+            pageRightEl.removeEventListener('click', onRightClick);
+            el.removeEventListener('click', onStageClick);
             if (progressWrap) {
               progressWrap.removeEventListener('mousedown', onProgressMouseDown);
               progressWrap.removeEventListener('touchstart', onProgressTouchStart);
