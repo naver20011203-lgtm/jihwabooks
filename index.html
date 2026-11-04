@@ -6082,14 +6082,14 @@
     /* Paper 그래픽 (48번 장면: 일어선 비둘기 왼손 책 커버 위치 정밀 일치) */
     .scene-48 .book-paper {
       position: absolute;
-      left: 469.6px;
-      top: 348.5px;
-      width: 147px;
-      height: 76.5px;
+      left: 483.5px;
+      top: 359.5px;
+      width: 140px;
+      height: 48px;
       pointer-events: none;
       z-index: 10;
-      transform-origin: 78.9px 58.9px; /* 하얀 내지 V-Crease 꼭지점 고정 */
-      animation: paperSway 2.6s ease-in-out infinite alternate;
+      transform-origin: 74.5px 47px; /* 하얀 내지 V-Crease 꼭지점 고정 */
+      animation: paperSway48 2.6s ease-in-out infinite alternate;
     }
 
     .scene-48 .book-paper img {
@@ -6098,6 +6098,11 @@
       display: block;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: high-quality;
+    }
+
+    @keyframes paperSway48 {
+      0%   { transform: rotate(-2.5deg); }
+      100% { transform: rotate(1.8deg); }
     }
 
     /* Steam 그래픽 (48번 장면: 일어선 비둘기 오른손 머그잔 위 위치 정밀 일치) */
@@ -9481,7 +9486,7 @@
         el.innerHTML = `
           <img class="bg" src="01_backgrounds/48.png" alt="">
           <div class="book-paper">
-            <img src="02_motions/47_paper.png" alt="">
+            <img src="02_motions/48_paper.png" alt="">
           </div>
           <div class="mug-steam-wrap">
             <div class="steam-haze"></div>
