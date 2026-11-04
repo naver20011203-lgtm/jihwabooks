@@ -10,6 +10,13 @@
   <!-- 새 세션/새 링크 접속 시 최신 버전 자동 새로고침 및 캐시 버스팅 -->
   <script>
     (function () {
+      // iPad / Safari 최적화: 이미지 비동기 디코딩 및 메인 스레드 프리징 방지
+      try {
+        if (typeof HTMLImageElement !== 'undefined') {
+          HTMLImageElement.prototype.decoding = 'async';
+        }
+      } catch (e) {}
+
       try {
         const sessionKey = '__jihwa_session_refreshed__';
         const hasSession = sessionStorage.getItem(sessionKey);
@@ -293,6 +300,10 @@
       width: 100%; height: 100%;
       overflow: hidden;
       background: #000;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-overflow-scrolling: touch;
     }
 
     .sr-only {
@@ -354,9 +365,8 @@
     .scene {
       position: absolute; inset: 0;
       overflow: hidden;
-      will-change: transform;
       backface-visibility: hidden;
-      transform: translate3d(0, 0, 0);
+      contain: layout size;
       background-color: #000000;
     }
 
@@ -368,6 +378,7 @@
 
     /* 전환: 위로 슬라이드 (부드럽고 빠른 1.6s 커튼콜) */
     .scene.slide-up-out {
+      will-change: transform;
       animation: slideUpOut 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
       z-index: 10;
     }
@@ -378,6 +389,7 @@
 
     /* 전환: 페이드 (2분 무입력 시 대기화면 복귀) */
     .scene.fade-in {
+      will-change: opacity;
       animation: fadeIn 0.8s ease forwards;
       z-index: 10;
     }
@@ -1180,6 +1192,10 @@
       width: 100%; height: 100%;
       overflow: hidden;
       background: #000;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-overflow-scrolling: touch;
     }
 
     .sr-only {
@@ -1241,9 +1257,8 @@
     .scene {
       position: absolute; inset: 0;
       overflow: hidden;
-      will-change: transform;
       backface-visibility: hidden;
-      transform: translate3d(0, 0, 0);
+      contain: layout size;
       background-color: #000000;
     }
 
@@ -1255,6 +1270,7 @@
 
     /* 전환: 위로 슬라이드 (부드럽고 빠른 1.6s 커튼콜) */
     .scene.slide-up-out {
+      will-change: transform;
       animation: slideUpOut 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
       z-index: 10;
     }
@@ -1265,6 +1281,7 @@
 
     /* 전환: 페이드 (2분 무입력 시 대기화면 복귀) */
     .scene.fade-in {
+      will-change: opacity;
       animation: fadeIn 0.8s ease forwards;
       z-index: 10;
     }
@@ -3608,7 +3625,30 @@
         }, { passive: true });
       });
 
+            const S1_PRELOAD_MAP = {
+        1: '01_backgrounds/01.png', 2: '01_backgrounds/02.png', 3: '01_backgrounds/03.png',
+        4: '01_backgrounds/04.png', 5: '01_backgrounds/05.png', 6: '01_backgrounds/05, 06 background.png',
+        7: '01_backgrounds/07.png', 8: '01_backgrounds/08.png', 9: '01_backgrounds/09.png',
+        10: '01_backgrounds/10.png', 11: '01_backgrounds/11.png', 13: '01_backgrounds/13.png',
+        14: '01_backgrounds/14 raining background.png', 17: '01_backgrounds/17_human_closeup.png',
+        18: '01_backgrounds/18_night_bg.png', 19: '01_backgrounds/19_stairs.png'
+      };
+      const s1Preloaded = new Set();
+      function preloadS1(n) {
+        if (typeof n !== 'number') return;
+        [n + 1, n - 1].forEach((k) => {
+          const bg = S1_PRELOAD_MAP[k];
+          if (bg && !s1Preloaded.has(bg)) {
+            s1Preloaded.add(bg);
+            const im = new Image();
+            im.decoding = 'async';
+            im.src = bg;
+          }
+        });
+      }
+
       function goTo(n, transition = 'none') {
+        preloadS1(n);
         if (n >= 20) {
           if (window.__TRANSITION_TO_S2__) {
             if (current) destroy(current);
@@ -3800,8 +3840,20 @@
       }
 
       function destroy(s) {
-        if (s.scene && s.scene.unmount) s.scene.unmount();
-        s.el.remove();
+        if (s.scene && s.scene.unmount) {
+          try { s.scene.unmount(); } catch (e) { console.error(e); }
+        }
+        if (s.el) {
+          try {
+            const media = s.el.querySelectorAll('img, video, canvas');
+            media.forEach((m) => {
+              if (m.tagName === 'IMG') { m.src = ''; }
+              else if (m.tagName === 'CANVAS') { m.width = 1; m.height = 1; }
+            });
+            s.el.innerHTML = '';
+          } catch (e) {}
+          s.el.remove();
+        }
       }
 
       const api = {
@@ -3845,6 +3897,10 @@
       width: 100%; height: 100%;
       overflow: hidden;
       background: #000;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-overflow-scrolling: touch;
     }
 
     .sr-only {
@@ -3907,9 +3963,8 @@
     .scene {
       position: absolute; inset: 0;
       overflow: hidden;
-      will-change: transform;
       backface-visibility: hidden;
-      transform: translate3d(0, 0, 0);
+      contain: layout size;
       background-color: #000000;
     }
 
@@ -3921,6 +3976,7 @@
 
     /* 전환: 위로 슬라이드 (부드럽고 빠른 1.6s 커튼콜) */
     .scene.slide-up-out {
+      will-change: transform;
       animation: slideUpOut 1.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
       z-index: 10;
     }
@@ -3941,6 +3997,7 @@
 
     /* 전환: 페이드 (2분 무입력 시 대기화면 복귀) */
     .scene.fade-in {
+      will-change: opacity;
       animation: fadeIn 0.8s ease forwards;
       z-index: 10;
     }
@@ -5886,8 +5943,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 47_1장면] 47 다음 장면: You 대사
@@ -5909,8 +5965,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 48_1장면] 48 다음 장면: You 대사
@@ -5932,8 +5987,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 1. 눈 그래픽 (398x73 원본 고화질 -> 정면 응시와 아래 책 응시 모션) */
     .scene-47 .character-eyes {
@@ -5957,8 +6011,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 2. Paper 그래픽 (파란 북커버 중앙 꼭지와 하얀 내지 중앙 꼭지 일치 + 고정점 pivot 기준 살랑거림) */
     .scene-47 .book-paper {
@@ -5978,8 +6031,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     @keyframes paperSway {
       0%   { transform: rotate(-4.5deg); }
@@ -6018,8 +6070,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* Paper 그래픽 (48번 장면: 일어선 비둘기 왼손 책 커버 위치 정밀 일치) */
     .scene-48 .book-paper {
@@ -6039,8 +6090,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     @keyframes paperSway48 {
       0%   { transform: rotate(-2.0deg); }
@@ -6294,8 +6344,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
   
     /* ==============================================================
        [S2 50장면] 비둘기 시선 이동 씬 (아래 -> 비둘기 기준 정면 -> 카메라 정중앙)
@@ -6317,8 +6366,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     .scene-50 .pigeon-pupil {
       position: absolute;
@@ -6346,8 +6394,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 51장면] 액자가 드러나며 시치미 떼는 비둘기 씬
@@ -6369,8 +6416,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 52장면] 액자 클로즈업 씬 ("You: (저 사진은 뭐지?)")
@@ -6392,8 +6438,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 53장면] 액자 정면 클로즈업 씬 ("You: (아, 그 친구인가? 오래전에 책을 선물했다던...)")
@@ -6415,8 +6460,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 54장면] 액자 앞을 슥 가로막으며 나타나는 비둘기 씬 (대사 없음 + 효과음)
@@ -6438,8 +6482,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 55장면] 정면 클로즈업 비둘기 아랫입술(lip.png) 상하 발화 모션 씬
@@ -6461,8 +6504,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 53 lip(x577.44y642.85 to y655.45).png 정밀 좌표 매핑 */
     .scene-55 .pigeon-lip {
@@ -6496,8 +6538,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 56장면] 앞서 걸어가는 비둘기 씬 ("P: 조심해서 잘 따라오셔야죠.")
@@ -6519,8 +6560,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 57장면 / 59페이지] 걸어 내려가는 비둘기 씬 ("P: 이곳의 어둠은 박쥐꽃의 꽃잎보다 깜깜하답니다.")
@@ -6542,8 +6582,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 58장면] 밖을 내다보는 비둘기 씬 ("P: 비는 결국 그치고야 말았군요.")
@@ -6565,8 +6604,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 59장면] 꽃을 건네며 카메라를 바라보는 비둘기 씬 ("P: 아, 그리고 이건 손님께 드리는 선물입니다.")
@@ -6588,8 +6626,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     .scene-59 .bg-58 {
       z-index: 1;
@@ -6631,8 +6668,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 60장면] 정면으로 돌아서서 꽃을 건네는 비둘기 씬 ("P: 떠나는 이에게는 항상 이 꽃을 선물하곤 하죠.")
@@ -6654,8 +6690,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 61·62장면] 꽃을 건네받은 손과 비둘기 씬 ("P: 반드시 오고야 말 행복." / "P: ’메리골드’의 꽃말입니다.")
@@ -6679,8 +6714,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 61·62번 배경에는 대사창 우측 위로 주인공의 손/소매가 겹쳐 그려져 있으므로 대화창 배경 이미지를 숨김 */
     .scene-61 .dialog-bg,
@@ -6712,8 +6746,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 3페이지(S1 4·5·6·11장면)와 동일하게 건물 좌측 끝(x: 378.03px, y: 97.91px)에 문 배치 */
     .scene-63 .door,
@@ -6756,8 +6789,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 63·64·65번 장면: 건물 좌우를 대칭으로 감싸는 밤 델피니움 (가운데 하단 빈 공간에 건물 배치 + 원형 그대로 살짝 상향 및 살랑살랑 모션) */
     .scene-63 .delphinium-night,
@@ -6779,8 +6811,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 66장면 / 68페이지] 밤하늘 아래 메리골드를 바라보는 주인공 ("You: ‘반드시 오고야 말 행복’이라...")
@@ -6802,8 +6833,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 메리골드: 팔 아래 레이어(z-index: 8), 주먹 쪽 고정점 중심 살랑이는 모션 */
     .scene-66 .marigold {
@@ -6825,8 +6855,7 @@
       backface-visibility: hidden;
       will-change: transform;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     @keyframes marigoldSway66 {
       from { transform: rotate(-3.5deg) translateZ(0); }
@@ -6849,8 +6878,7 @@
       height: 100%;
       display: block;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 66번 장면 (68페이지): 대화창 영역을 제외한 상단 영역에 #869CFF, 곱하기(multiply), 투명도 60% 필터 적용 */
     .scene-66 .scene-color-filter {
@@ -6885,8 +6913,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* ==============================================================
        [S2 69장면] 펼쳐진 쪽지 확인 + 1초 뒤 중앙 정렬 대사(#30864C) + 쪽지 P.S.로 줌인 연출
@@ -6922,8 +6949,7 @@
       transform: translate3d(0, 0, 0) scale(1);
       will-change: transform;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 이전 줌인(35번 장면: 1.5s steps(15, end))과 동일한 카메라 줌인 모션 */
     .scene-69.zooming .bg-start {
@@ -6979,8 +7005,7 @@
       display: block;
       pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 사각형 + 델피니움 그룹: 배경은 고정한 채로 하단으로 천천히 내려가는 카메라 무빙 */
     .scene-70 .scene-70-ground-group {
@@ -7029,8 +7054,7 @@
       pointer-events: none;
       z-index: 2;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
 
     /* 사각형과 델피니움이 내려간 후 상단에 씌워지는 #453E72 곱하기 필터 (0% -> 100%) */
     .scene-70 .scene-70-ending-veil {
@@ -7087,8 +7111,7 @@
       display: block;
       object-fit: contain;
       image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
-    }
+}
   
   </script>
   <script type="text/plain" id="s2-js-data">
@@ -11490,7 +11513,46 @@
         }, { passive: true });
       });
 
+            const S2_PRELOAD_MAP = {
+        21: '01_backgrounds/01.png', 22: '01_backgrounds/02.png', 23: '01_backgrounds/23.png',
+        24: '01_backgrounds/24.png', 25: '01_backgrounds/25.png', 26: '01_backgrounds/26.png',
+        27: '01_backgrounds/27.png', 28: '01_backgrounds/28_clean.png', 29: '01_backgrounds/29_clean.png',
+        30: '01_backgrounds/30.png', 32: '01_backgrounds/32.png', 33: '01_backgrounds/33.png',
+        34: '01_backgrounds/34.png', 35: '01_backgrounds/pan_35_36.png', 37: '01_backgrounds/37.png',
+        38: '01_backgrounds/38.png', 39: '01_backgrounds/39.png', 40: '01_backgrounds/40.png',
+        41: '01_backgrounds/41.png', 42: '01_backgrounds/42.png', 43: '01_backgrounds/43.png',
+        44: '01_backgrounds/44.png', 45: '01_backgrounds/45.png', 46: '01_backgrounds/46.png',
+        47: '01_backgrounds/47.png', '47_1': '01_backgrounds/47_1.png',
+        48: '01_backgrounds/48.png', '48_1': '01_backgrounds/48_1.png',
+        49: '01_backgrounds/49.png', 50: '01_backgrounds/50.png', 51: '01_backgrounds/51.png',
+        52: '01_backgrounds/52.png', 53: '01_backgrounds/53.png', 54: '01_backgrounds/54.png',
+        55: '01_backgrounds/55.png', 56: '01_backgrounds/56.png', 57: '01_backgrounds/57.png',
+        58: '01_backgrounds/58.png', 59: '01_backgrounds/59.png', 60: '01_backgrounds/60.png',
+        61: '01_backgrounds/61.png', 62: '01_backgrounds/62.png', 63: '01_backgrounds/63.png',
+        64: '01_backgrounds/64.png', 65: '01_backgrounds/65.png', 66: '01_backgrounds/66.png',
+        67: '01_backgrounds/67.png', 68: '01_backgrounds/68.png', 69: '01_backgrounds/69.png',
+        70: '01_backgrounds/70.png'
+      };
+      const s2Preloaded = new Set();
+      function preloadS2(n) {
+        let nextKeys = [];
+        if (n === 47) nextKeys = ['47_1', 48];
+        else if (n === '47_1') nextKeys = ['48_1', 48];
+        else if (n === '48_1') nextKeys = [48, 49];
+        else if (typeof n === 'number') nextKeys = [n + 1, n - 1];
+        nextKeys.forEach((k) => {
+          const bg = S2_PRELOAD_MAP[k];
+          if (bg && !s2Preloaded.has(bg)) {
+            s2Preloaded.add(bg);
+            const im = new Image();
+            im.decoding = 'async';
+            im.src = bg;
+          }
+        });
+      }
+
       function goTo(n, transition = 'none') {
+        preloadS2(n);
         const def = window.SCENES[n];
         if (!def) { console.warn('장면 없음:', n); return; }
 
@@ -11712,8 +11774,20 @@
       }
 
       function destroy(s) {
-        if (s.scene && s.scene.unmount) s.scene.unmount();
-        s.el.remove();
+        if (s.scene && s.scene.unmount) {
+          try { s.scene.unmount(); } catch (e) { console.error(e); }
+        }
+        if (s.el) {
+          try {
+            const media = s.el.querySelectorAll('img, video, canvas');
+            media.forEach((m) => {
+              if (m.tagName === 'IMG') { m.src = ''; }
+              else if (m.tagName === 'CANVAS') { m.width = 1; m.height = 1; }
+            });
+            s.el.innerHTML = '';
+          } catch (e) {}
+          s.el.remove();
+        }
       }
 
       const api = {
