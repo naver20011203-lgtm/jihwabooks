@@ -33,6 +33,38 @@
       window.endingBgmAudio = endingAudio;
 
       window.__IS_ENDING_BGM_ACTIVE__ = false;
+      let bgmFadeTimer = null;
+
+      window.fadeBgmVolume = function (targetVol, durationMs = 1800) {
+        if (!window.bgmAudio) return;
+        if (bgmFadeTimer) {
+          clearInterval(bgmFadeTimer);
+          bgmFadeTimer = null;
+        }
+        const startVol = window.bgmAudio.volume;
+        const diff = targetVol - startVol;
+        if (Math.abs(diff) < 0.008 || durationMs <= 0) {
+          window.bgmAudio.volume = Math.max(0, Math.min(1, targetVol));
+          return;
+        }
+        const interval = 40;
+        const totalSteps = Math.max(1, Math.round(durationMs / interval));
+        let step = 0;
+        bgmFadeTimer = setInterval(function () {
+          step++;
+          const progress = Math.min(1, step / totalSteps);
+          // 부드러운 S자 커브(quadratic ease-in-out)로 자연스러운 페이드 연출
+          const ease = progress < 0.5
+            ? 2 * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+          const currentVol = startVol + diff * ease;
+          window.bgmAudio.volume = Math.max(0, Math.min(1, currentVol));
+          if (progress >= 1) {
+            clearInterval(bgmFadeTimer);
+            bgmFadeTimer = null;
+          }
+        }, interval);
+      };
 
       window.tryPlayBgm = function () {
         if (window.__IS_ENDING_BGM_ACTIVE__) {
@@ -51,6 +83,10 @@
 
       window.switchToEndingBgm = function () {
         window.__IS_ENDING_BGM_ACTIVE__ = true;
+        if (bgmFadeTimer) {
+          clearInterval(bgmFadeTimer);
+          bgmFadeTimer = null;
+        }
         if (window.bgmAudio && !window.bgmAudio.paused) {
           try { window.bgmAudio.pause(); } catch (e) {}
         }
@@ -67,7 +103,7 @@
         }
       };
 
-      window.switchToMainBgm = function () {
+      window.switchToMainBgm = function (sceneNumber) {
         window.__IS_ENDING_BGM_ACTIVE__ = false;
         if (window.endingBgmAudio && !window.endingBgmAudio.paused) {
           try {
@@ -75,13 +111,26 @@
             window.endingBgmAudio.currentTime = 0;
           } catch (e) {}
         }
-        if (window.bgmAudio && window.bgmAudio.paused) {
-          try {
-            const p = window.bgmAudio.play();
-            if (p && typeof p.then === 'function') {
-              p.catch(function () {});
-            }
-          } catch (e) {}
+
+        // 68, 69, 70페이지(장면 66, 67, 68)는 71페이지 엔딩 음악의 극적인 등장을 위해 0.06(아주 얕은 볼륨)으로 페이드 아웃
+        const isFaint = (sceneNumber !== undefined && sceneNumber !== null) && (
+          sceneNumber === 66 || sceneNumber === 67 || sceneNumber === 68 ||
+          sceneNumber === '66' || sceneNumber === '67' || sceneNumber === '68'
+        );
+        const targetVol = isFaint ? 0.06 : 0.80;
+
+        if (window.bgmAudio) {
+          if (window.bgmAudio.paused) {
+            window.bgmAudio.volume = targetVol;
+            try {
+              const p = window.bgmAudio.play();
+              if (p && typeof p.then === 'function') {
+                p.catch(function () {});
+              }
+            } catch (e) {}
+          } else {
+            window.fadeBgmVolume(targetVol, isFaint ? 1800 : 800);
+          }
         }
       };
 
@@ -11461,7 +11510,7 @@
         if (n === 69 || n === 70 || n === '69' || n === '70') {
           if (window.switchToEndingBgm) window.switchToEndingBgm();
         } else {
-          if (window.switchToMainBgm) window.switchToMainBgm();
+          if (window.switchToMainBgm) window.switchToMainBgm(n);
         }
 
         const el = document.createElement('section');
@@ -11820,7 +11869,7 @@
 
       // ========== S1 파트 기동 ==========
       function launchS1(initialScene = 1) {
-        if (window.switchToMainBgm) window.switchToMainBgm();
+        if (window.switchToMainBgm) window.switchToMainBgm(initialScene);
         window.MEMO_BOOK_ID = Math.floor(Math.random() * 4) + 1;
         cleanupCurrentListeners();
         stopAllAudio();
@@ -11843,7 +11892,7 @@
         if (initialScene === 69 || initialScene === 70 || initialScene === '69' || initialScene === '70') {
           if (window.switchToEndingBgm) window.switchToEndingBgm();
         } else {
-          if (window.switchToMainBgm) window.switchToMainBgm();
+          if (window.switchToMainBgm) window.switchToMainBgm(initialScene);
         }
         cleanupCurrentListeners();
         stopAllAudio();
