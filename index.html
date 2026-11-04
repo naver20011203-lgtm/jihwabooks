@@ -572,9 +572,16 @@
       -webkit-user-drag: none;
     }
 
-    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
-    .scene-reader .global-home-btn,
+    /* 책 고르는 화면(46번 장면) 및 독서 화면(reader)에서는 책 모양 버튼 완전 숨김 */
+    .scene-46 .global-book-btn,
     .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼도 완전 숨김 */
+    .scene-reader .global-home-btn {
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -2352,9 +2359,16 @@
       -webkit-user-drag: none;
     }
 
-    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
-    .scene-reader .global-home-btn,
+    /* 책 고르는 화면(46번 장면) 및 독서 화면(reader)에서는 책 모양 버튼 완전 숨김 */
+    .scene-46 .global-book-btn,
     .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼도 완전 숨김 */
+    .scene-reader .global-home-btn {
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -4170,7 +4184,8 @@
           }
 
           // 우측 상단 책읽기/책 고르기 버튼 (46장면 책상 위 책 고르기로 이동)
-          if (!container.querySelector('.global-book-btn')) {
+          // 단, 이미 책을 고르는 46번 장면일 때는 노출하지 않음
+          if (n !== 46 && String(n) !== '46' && !container.querySelector('.global-book-btn')) {
             const bookBtn = document.createElement('button');
             bookBtn.type = 'button';
             bookBtn.className = 'global-book-btn';
@@ -7579,9 +7594,16 @@
       -webkit-user-drag: none;
     }
 
-    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
-    .scene-reader .global-home-btn,
+    /* 책 고르는 화면(46번 장면) 및 독서 화면(reader)에서는 책 모양 버튼 완전 숨김 */
+    .scene-46 .global-book-btn,
     .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼도 완전 숨김 */
+    .scene-reader .global-home-btn {
       display: none !important;
       visibility: hidden !important;
       pointer-events: none !important;
@@ -12228,7 +12250,8 @@
           }
 
           // 우측 상단 책읽기/책 고르기 버튼 (46장면 책상 위 책 고르기로 이동)
-          if (!container.querySelector('.global-book-btn')) {
+          // 단, 이미 책을 고르는 46번 장면일 때는 노출하지 않음
+          if (n !== 46 && String(n) !== '46' && !container.querySelector('.global-book-btn')) {
             const bookBtn = document.createElement('button');
             bookBtn.type = 'button';
             bookBtn.className = 'global-book-btn';
