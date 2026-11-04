@@ -529,6 +529,57 @@
       -webkit-user-drag: none;
     }
 
+    /* ========== 3페이지부터 노출되는 우측 상단 책읽기/책 고르기 버튼 (클릭 시 46장면 책상 위 책 고르기로 이동) ========== */
+    .global-book-btn {
+      position: absolute;
+      top: 26px;
+      right: 28px;
+      width: 54px;
+      height: 54px;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer !important;
+      z-index: 1000;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+    }
+
+    .global-book-btn:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6)) brightness(1.06);
+    }
+
+    .global-book-btn:active {
+      transform: scale(0.93);
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4)) brightness(0.96);
+    }
+
+    .global-book-btn img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
+    .scene-reader .global-home-btn,
+    .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
     /* 각 장면 공통 */
     .scene {
       position: absolute; inset: 0;
@@ -2256,6 +2307,57 @@
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
+    }
+
+    /* ========== 3페이지부터 노출되는 우측 상단 책읽기/책 고르기 버튼 (클릭 시 46장면 책상 위 책 고르기로 이동) ========== */
+    .global-book-btn {
+      position: absolute;
+      top: 26px;
+      right: 28px;
+      width: 54px;
+      height: 54px;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer !important;
+      z-index: 1000;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+    }
+
+    .global-book-btn:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6)) brightness(1.06);
+    }
+
+    .global-book-btn:active {
+      transform: scale(0.93);
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4)) brightness(0.96);
+    }
+
+    .global-book-btn img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
+    .scene-reader .global-home-btn,
+    .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
   </script>
@@ -4041,33 +4143,65 @@
             attachCounterAndProgress(el);
           }
         }
-        const attachHomeButton = (container) => {
-          if (!container || container.querySelector('.global-home-btn')) return;
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'global-home-btn';
-          btn.setAttribute('aria-label', '처음 화면으로 돌아가기');
-          btn.title = '처음 화면으로 돌아가기';
-          btn.innerHTML = '<img src="02_motions/home_btn.png" alt="홈">';
-          ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
-            btn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
-          });
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (window.tryPlayBgm) window.tryPlayBgm();
-            if (api && api.goTo) {
-              api.goTo(1, 'fade');
-            } else if (window.__TRANSITION_TO_S1__) {
-              window.__TRANSITION_TO_S1__(1);
-            }
-          });
-          container.appendChild(btn);
+        const attachNavButtons = (container) => {
+          if (!container) return;
+          // 좌측 상단 홈 버튼 (처음 화면으로 복귀)
+          if (!container.querySelector('.global-home-btn')) {
+            const homeBtn = document.createElement('button');
+            homeBtn.type = 'button';
+            homeBtn.className = 'global-home-btn';
+            homeBtn.setAttribute('aria-label', '처음 화면으로 돌아가기');
+            homeBtn.title = '처음 화면으로 돌아가기';
+            homeBtn.innerHTML = '<img src="02_motions/home_btn.png" alt="홈">';
+            ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
+              homeBtn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
+            });
+            homeBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (window.tryPlayBgm) window.tryPlayBgm();
+              if (api && api.goTo) {
+                api.goTo(1, 'fade');
+              } else if (window.__TRANSITION_TO_S1__) {
+                window.__TRANSITION_TO_S1__(1);
+              }
+            });
+            container.appendChild(homeBtn);
+          }
+
+          // 우측 상단 책읽기/책 고르기 버튼 (46장면 책상 위 책 고르기로 이동)
+          if (!container.querySelector('.global-book-btn')) {
+            const bookBtn = document.createElement('button');
+            bookBtn.type = 'button';
+            bookBtn.className = 'global-book-btn';
+            bookBtn.setAttribute('aria-label', '책 고르는 화면으로 이동');
+            bookBtn.title = '책 고르는 화면으로 이동';
+            bookBtn.innerHTML = '<img src="02_motions/book_btn.png" alt="책 고르기">';
+            ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
+              bookBtn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
+            });
+            bookBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (window.tryPlayBgm) window.tryPlayBgm();
+              if (window.__TRANSITION_TO_S2__) {
+                if (current) destroy(current);
+                current = null;
+                try { ambientAudio.pause(); } catch(err){}
+                try { clearTimeout(idleTimer); } catch(err){}
+                if (fadeTimer) clearInterval(fadeTimer);
+                window.__TRANSITION_TO_S2__(46);
+              } else if (api && api.goTo) {
+                api.goTo(46, 'fade');
+              }
+            });
+            container.appendChild(bookBtn);
+          }
         };
 
-        // 3페이지(3장면)부터 좌측 상단 홈 버튼 부착
+        // 3페이지(3장면)부터 좌측 상단 홈 버튼 및 우측 상단 책 고르기 버튼 부착
         if (n >= 3) {
-          attachHomeButton(el);
+          attachNavButtons(el);
         }
 
         // 모든 장면에 공통 컬러 필터 레이어 (#FFDB3B, 25%, multiply) 적용 (대기화면 포함)
@@ -7400,6 +7534,57 @@
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
+    }
+
+    /* ========== 3페이지부터 노출되는 우측 상단 책읽기/책 고르기 버튼 (클릭 시 46장면 책상 위 책 고르기로 이동) ========== */
+    .global-book-btn {
+      position: absolute;
+      top: 26px;
+      right: 28px;
+      width: 54px;
+      height: 54px;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer !important;
+      z-index: 1000;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+    }
+
+    .global-book-btn:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6)) brightness(1.06);
+    }
+
+    .global-book-btn:active {
+      transform: scale(0.93);
+      filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4)) brightness(0.96);
+    }
+
+    .global-book-btn img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* 독서 화면(reader)에서는 홈 버튼과 책읽기 버튼 모두 완전 숨김 */
+    .scene-reader .global-home-btn,
+    .scene-reader .global-book-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
   </script>
@@ -12011,32 +12196,64 @@
             attachCounterAndProgress(el);
           }
         }
-        const attachHomeButton = (container) => {
-          if (!container || container.querySelector('.global-home-btn')) return;
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'global-home-btn';
-          btn.setAttribute('aria-label', '처음 화면으로 돌아가기');
-          btn.title = '처음 화면으로 돌아가기';
-          btn.innerHTML = '<img src="02_motions/home_btn.png" alt="홈">';
-          ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
-            btn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
-          });
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            if (window.tryPlayBgm) window.tryPlayBgm();
-            if (window.__TRANSITION_TO_S1__) {
-              window.__TRANSITION_TO_S1__(1);
-            } else if (api && api.goTo) {
-              api.goTo(1, 'fade');
-            }
-          });
-          container.appendChild(btn);
+        const attachNavButtons = (container) => {
+          if (!container) return;
+          // 좌측 상단 홈 버튼 (처음 화면으로 복귀)
+          if (!container.querySelector('.global-home-btn')) {
+            const homeBtn = document.createElement('button');
+            homeBtn.type = 'button';
+            homeBtn.className = 'global-home-btn';
+            homeBtn.setAttribute('aria-label', '처음 화면으로 돌아가기');
+            homeBtn.title = '처음 화면으로 돌아가기';
+            homeBtn.innerHTML = '<img src="02_motions/home_btn.png" alt="홈">';
+            ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
+              homeBtn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
+            });
+            homeBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (window.tryPlayBgm) window.tryPlayBgm();
+              if (window.__TRANSITION_TO_S1__) {
+                if (current) destroy(current);
+                current = null;
+                try { ambientAudio.pause(); } catch(err){}
+                try { clearTimeout(idleTimer); } catch(err){}
+                if (fadeTimer) clearInterval(fadeTimer);
+                window.__TRANSITION_TO_S1__(1);
+              } else if (api && api.goTo) {
+                api.goTo(1, 'fade');
+              }
+            });
+            container.appendChild(homeBtn);
+          }
+
+          // 우측 상단 책읽기/책 고르기 버튼 (46장면 책상 위 책 고르기로 이동)
+          if (!container.querySelector('.global-book-btn')) {
+            const bookBtn = document.createElement('button');
+            bookBtn.type = 'button';
+            bookBtn.className = 'global-book-btn';
+            bookBtn.setAttribute('aria-label', '책 고르는 화면으로 이동');
+            bookBtn.title = '책 고르는 화면으로 이동';
+            bookBtn.innerHTML = '<img src="02_motions/book_btn.png" alt="책 고르기">';
+            ['mousedown', 'pointerdown', 'touchstart'].forEach((ev) => {
+              bookBtn.addEventListener(ev, (e) => e.stopPropagation(), { passive: true });
+            });
+            bookBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (window.tryPlayBgm) window.tryPlayBgm();
+              if (api && api.goTo) {
+                api.goTo(46, 'fade');
+              }
+            });
+            container.appendChild(bookBtn);
+          }
         };
 
-        // S2 모든 장면(21~72페이지 및 독서 모드)에 좌측 상단 홈 버튼 부착
-        attachHomeButton(el);
+        // 독서 화면(reader)을 제외한 모든 장면에 홈 버튼 및 책 고르기 버튼 부착
+        if (!isReader) {
+          attachNavButtons(el);
+        }
 
         // S2 모든 장면에 공통 컬러 필터 레이어 (#E8CBFF, 50%, multiply) 최상위 배치
         const hasDialog = !!el.querySelector('.dialog-wrap');
