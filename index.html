@@ -287,6 +287,130 @@
         },
         true
       );
+
+      // ========== 마우스 좌우 버튼 동시 클릭 시 새로고침 ==========
+      let isLeftDown = false;
+      let isRightDown = false;
+      let lastLeftTime = 0;
+      let lastRightTime = 0;
+      let isReloading = false;
+
+      window.__IS_SIMULTANEOUS_RELOAD__ = function () {
+        return isReloading;
+      };
+
+      window.__CANCEL_PREV_TIMER__ = function () {
+        if (window.__PENDING_PREV_TIMER__) {
+          clearTimeout(window.__PENDING_PREV_TIMER__);
+          window.__PENDING_PREV_TIMER__ = null;
+        }
+      };
+
+      function triggerSimultaneousReload(e) {
+        if (isReloading) return;
+        isReloading = true;
+
+        if (e) {
+          try { e.preventDefault(); } catch (err) {}
+          try { e.stopPropagation(); } catch (err) {}
+          if (typeof e.stopImmediatePropagation === 'function') {
+            try { e.stopImmediatePropagation(); } catch (err) {}
+          }
+        }
+
+        if (window.__CANCEL_PREV_TIMER__) {
+          window.__CANCEL_PREV_TIMER__();
+        }
+
+        try {
+          sessionStorage.removeItem('__jihwa_session_refreshed__');
+        } catch (err) {}
+
+        // 화면 즉시 새로고침
+        window.location.reload();
+      }
+
+      function checkMouseButtons(e) {
+        const now = performance.now();
+
+        // 1) e.buttons 비트마스크: 1(좌클릭) + 2(우클릭) = 3
+        if ((e.buttons & 1) && (e.buttons & 2)) {
+          triggerSimultaneousReload(e);
+          return true;
+        }
+
+        // 2) 내부 상태 추적: 좌클릭과 우클릭이 둘 다 눌려있는 상태
+        if (isLeftDown && isRightDown) {
+          triggerSimultaneousReload(e);
+          return true;
+        }
+
+        // 3) 시간 간격: 좌우 버튼이 250ms 이내에 거의 동시에 눌린 경우
+        if (Math.abs(lastLeftTime - lastRightTime) < 250 &&
+            (now - lastLeftTime < 250) &&
+            (now - lastRightTime < 250)) {
+          triggerSimultaneousReload(e);
+          return true;
+        }
+
+        return false;
+      }
+
+      function onAnyPointerDown(e) {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        const now = performance.now();
+        if (e.button === 0) {
+          isLeftDown = true;
+          lastLeftTime = now;
+        } else if (e.button === 2) {
+          isRightDown = true;
+          lastRightTime = now;
+        }
+
+        if (checkMouseButtons(e)) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === 'function') {
+            e.stopImmediatePropagation();
+          }
+        }
+      }
+
+      function onAnyPointerUp(e) {
+        if (e.pointerType && e.pointerType !== 'mouse') return;
+        if (e.button === 0) isLeftDown = false;
+        if (e.button === 2) isRightDown = false;
+      }
+
+      window.addEventListener('pointerdown', onAnyPointerDown, true);
+      window.addEventListener('mousedown', onAnyPointerDown, true);
+      window.addEventListener('pointerup', onAnyPointerUp, true);
+      window.addEventListener('mouseup', onAnyPointerUp, true);
+
+      window.addEventListener('blur', function () {
+        isLeftDown = false;
+        isRightDown = false;
+      });
+
+      // contextmenu (우클릭 메뉴) 발생 시 좌우 동시 클릭 검사
+      window.addEventListener('contextmenu', function (e) {
+        const now = performance.now();
+        if (isReloading || isLeftDown || ((e.buttons & 1) === 1) || (now - lastLeftTime < 250)) {
+          triggerSimultaneousReload(e);
+        }
+      }, true);
+
+      // 좌우 동시 클릭 시 좌클릭으로 인한 장면 이동/클릭 이벤트 전파 차단
+      window.addEventListener('click', function (e) {
+        const now = performance.now();
+        if (isReloading || isRightDown || ((e.buttons & 2) === 2) || (now - lastRightTime < 250)) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof e.stopImmediatePropagation === 'function') {
+            e.stopImmediatePropagation();
+          }
+        }
+      }, true);
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -3983,8 +4107,13 @@
       // 마우스 우클릭 시 이전 장면으로 이동
       window.addEventListener('contextmenu', (e) => {
         e.preventDefault();
+        if (window.__IS_SIMULTANEOUS_RELOAD__ && window.__IS_SIMULTANEOUS_RELOAD__()) return;
         if (current && (current.n > 1 || current.n === '47_1' || current.n === '48_1')) {
-          api.prev('fade');
+          if (window.__CANCEL_PREV_TIMER__) window.__CANCEL_PREV_TIMER__();
+          window.__PENDING_PREV_TIMER__ = setTimeout(() => {
+            if (window.__IS_SIMULTANEOUS_RELOAD__ && window.__IS_SIMULTANEOUS_RELOAD__()) return;
+            api.prev('fade');
+          }, 160);
         }
       });
 
@@ -12004,28 +12133,33 @@
       // 마우스 우클릭 시 이전 장면으로 이동
       window.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        if (current && current.n === 'reader') {
-          if (window.__READER_SHOW_EXIT_MODAL__) {
-            window.__READER_SHOW_EXIT_MODAL__();
+        if (window.__IS_SIMULTANEOUS_RELOAD__ && window.__IS_SIMULTANEOUS_RELOAD__()) return;
+        if (window.__CANCEL_PREV_TIMER__) window.__CANCEL_PREV_TIMER__();
+        window.__PENDING_PREV_TIMER__ = setTimeout(() => {
+          if (window.__IS_SIMULTANEOUS_RELOAD__ && window.__IS_SIMULTANEOUS_RELOAD__()) return;
+          if (current && current.n === 'reader') {
+            if (window.__READER_SHOW_EXIT_MODAL__) {
+              window.__READER_SHOW_EXIT_MODAL__();
+              return;
+            }
+            api.goTo(46, 'fade');
             return;
           }
-          api.goTo(46, 'fade');
-          return;
-        }
-        if (current && (current.n === 1 || current.n === 21)) {
-          if (window.__TRANSITION_TO_S1__) {
-            if (current) destroy(current);
-            current = null;
-            try { ambientAudio.pause(); } catch(e){}
-            try { clearTimeout(idleTimer); } catch(e){}
-            if (fadeTimer) clearInterval(fadeTimer);
-            window.__TRANSITION_TO_S1__(19);
-            return;
+          if (current && (current.n === 1 || current.n === 21)) {
+            if (window.__TRANSITION_TO_S1__) {
+              if (current) destroy(current);
+              current = null;
+              try { ambientAudio.pause(); } catch(e){}
+              try { clearTimeout(idleTimer); } catch(e){}
+              if (fadeTimer) clearInterval(fadeTimer);
+              window.__TRANSITION_TO_S1__(19);
+              return;
+            }
           }
-        }
-        if (current && (current.n > 1 || current.n === '47_1' || current.n === '48_1')) {
-          api.prev('fade');
-        }
+          if (current && (current.n > 1 || current.n === '47_1' || current.n === '48_1')) {
+            api.prev('fade');
+          }
+        }, 160);
       });
 
       // 2분 무입력 타이머
