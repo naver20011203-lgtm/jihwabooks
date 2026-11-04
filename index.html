@@ -6586,24 +6586,10 @@
       image-rendering: high-quality;
     }
 
-    /* 61·62번 배경에는 대사창 우측 위로 주인공의 손/소매가 겹쳐 그려져 있으므로 대화창 배경 이미지를 숨기고 하단 손/소매 필터 패치 배치 */
+    /* 61·62번 배경에는 대사창 우측 위로 주인공의 손/소매가 겹쳐 그려져 있으므로 대화창 배경 이미지를 숨김 */
     .scene-61 .dialog-bg,
     .scene-62 .dialog-bg {
       display: none;
-    }
-
-    .scene-61 .scene-61-hand-lower,
-    .scene-62 .scene-61-hand-lower {
-      position: absolute;
-      left: 0;
-      top: 809px;
-      width: 1366px;
-      height: 215px;
-      pointer-events: none;
-      z-index: 55;
-      display: block;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: high-quality;
     }
 
     /* ==============================================================
@@ -10107,7 +10093,6 @@
       mount(el, app) {
         el.innerHTML = `
           <img class="bg" src="01_backgrounds/61.png" alt="">
-          <img class="scene-61-hand-lower" src="02_motions/61_hand_lower.png" alt="">
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
             <img class="dialog-bg" src="02_motions/06 Red text background .png" alt="">
@@ -10160,7 +10145,6 @@
       mount(el, app) {
         el.innerHTML = `
           <img class="bg" src="01_backgrounds/62.png" alt="">
-          <img class="scene-61-hand-lower" src="02_motions/61_hand_lower.png" alt="">
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
             <img class="dialog-bg" src="02_motions/06 Red text background .png" alt="">
