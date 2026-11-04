@@ -18,7 +18,27 @@
       });
       window.bgmAudio = audio;
 
+      // 71페이지(장면 69)부터 재생되는 엔딩 배경음악
+      const endingAudio = new Audio('02_motions/ending_bgm.mp3');
+      endingAudio.loop = true;
+      endingAudio.preload = 'auto';
+      endingAudio.volume = 0.80;
+      endingAudio.addEventListener('error', function () {
+        if (!endingAudio.src.endsWith('/ending_bgm.mp3') && !endingAudio.src.endsWith('ending_bgm.mp3')) {
+          endingAudio.src = 'ending_bgm.mp3';
+          endingAudio.load();
+          if (window.switchToEndingBgm && window.__IS_ENDING_BGM_ACTIVE__) window.switchToEndingBgm();
+        }
+      });
+      window.endingBgmAudio = endingAudio;
+
+      window.__IS_ENDING_BGM_ACTIVE__ = false;
+
       window.tryPlayBgm = function () {
+        if (window.__IS_ENDING_BGM_ACTIVE__) {
+          if (window.switchToEndingBgm) window.switchToEndingBgm();
+          return;
+        }
         if (!window.bgmAudio) return;
         if (!window.bgmAudio.paused) return;
         try {
@@ -29,6 +49,42 @@
         } catch (e) {}
       };
 
+      window.switchToEndingBgm = function () {
+        window.__IS_ENDING_BGM_ACTIVE__ = true;
+        if (window.bgmAudio && !window.bgmAudio.paused) {
+          try { window.bgmAudio.pause(); } catch (e) {}
+        }
+        if (window.endingBgmAudio) {
+          window.endingBgmAudio.volume = 0.80;
+          if (window.endingBgmAudio.paused) {
+            try {
+              const p = window.endingBgmAudio.play();
+              if (p && typeof p.then === 'function') {
+                p.catch(function () {});
+              }
+            } catch (e) {}
+          }
+        }
+      };
+
+      window.switchToMainBgm = function () {
+        window.__IS_ENDING_BGM_ACTIVE__ = false;
+        if (window.endingBgmAudio && !window.endingBgmAudio.paused) {
+          try {
+            window.endingBgmAudio.pause();
+            window.endingBgmAudio.currentTime = 0;
+          } catch (e) {}
+        }
+        if (window.bgmAudio && window.bgmAudio.paused) {
+          try {
+            const p = window.bgmAudio.play();
+            if (p && typeof p.then === 'function') {
+              p.catch(function () {});
+            }
+          } catch (e) {}
+        }
+      };
+
       // 대기화면 로드 즉시 무조건 재생 시도
       window.tryPlayBgm();
       document.addEventListener('DOMContentLoaded', window.tryPlayBgm);
@@ -37,8 +93,15 @@
       // 브라우저 정책으로 첫 로드 시 차단된 경우, 대기화면에서 유저의 어떤 첫 제스처든 발생하는 즉시 재생
       const bgmUnlockEvents = ['pointerdown', 'mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'pointermove', 'focus', 'wheel'];
       const onBgmGesture = function () {
-        window.tryPlayBgm();
-        if (window.bgmAudio && !window.bgmAudio.paused) {
+        if (window.__IS_ENDING_BGM_ACTIVE__) {
+          if (window.endingBgmAudio && window.endingBgmAudio.paused) {
+            try { window.endingBgmAudio.play(); } catch (e) {}
+          }
+        } else {
+          window.tryPlayBgm();
+        }
+        const isBgmPlaying = (window.bgmAudio && !window.bgmAudio.paused) || (window.endingBgmAudio && !window.endingBgmAudio.paused);
+        if (isBgmPlaying) {
           bgmUnlockEvents.forEach(function (ev) {
             window.removeEventListener(ev, onBgmGesture, true);
             document.removeEventListener(ev, onBgmGesture, true);
@@ -11356,6 +11419,11 @@
         if (!def) { console.warn('장면 없음:', n); return; }
 
         updateAmbientAudio(n);
+        if (n === 69 || n === 70 || n === '69' || n === '70') {
+          if (window.switchToEndingBgm) window.switchToEndingBgm();
+        } else {
+          if (window.switchToMainBgm) window.switchToMainBgm();
+        }
 
         const el = document.createElement('section');
         const numPad = String(n).padStart(2, '0');
@@ -11713,6 +11781,7 @@
 
       // ========== S1 파트 기동 ==========
       function launchS1(initialScene = 1) {
+        if (window.switchToMainBgm) window.switchToMainBgm();
         window.MEMO_BOOK_ID = Math.floor(Math.random() * 4) + 1;
         cleanupCurrentListeners();
         stopAllAudio();
@@ -11732,6 +11801,11 @@
 
       // ========== S2 파트 기동 ==========
       function launchS2(initialScene = 1) {
+        if (initialScene === 69 || initialScene === 70 || initialScene === '69' || initialScene === '70') {
+          if (window.switchToEndingBgm) window.switchToEndingBgm();
+        } else {
+          if (window.switchToMainBgm) window.switchToMainBgm();
+        }
         cleanupCurrentListeners();
         stopAllAudio();
         resetStageDom();
