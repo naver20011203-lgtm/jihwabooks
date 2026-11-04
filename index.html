@@ -6663,6 +6663,29 @@
       image-rendering: high-quality;
     }
 
+    /* 63·64·65번 장면: 건물 좌우를 대칭으로 감싸는 밤 델피니움 (가운데 하단 빈 공간에 건물 배치) */
+    .scene-63 .delphinium-night,
+    .scene-64 .delphinium-night,
+    .scene-65 .delphinium-night {
+      position: absolute;
+      left: -23px;
+      top: 555px;
+      width: 1458px;
+      height: 281px;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    .scene-63 .delphinium-night img,
+    .scene-64 .delphinium-night img,
+    .scene-65 .delphinium-night img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: high-quality;
+    }
+
     /* ==============================================================
        [S2 66장면] 밤하늘 아래 메리골드를 든 팔 씬 ("You: ‘반드시 오고야 말 행복’이라...")
        ============================================================== */
@@ -10180,6 +10203,9 @@
           <div class="door">
             <img src="02_motions/63_door.png" alt="문">
           </div>
+          <div class="delphinium-night">
+            <img src="02_motions/delphinium_night.svg" alt="델피니움">
+          </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
             <img class="dialog-bg" src="02_motions/06 Red text background .png" alt="">
@@ -10236,6 +10262,9 @@
           <img class="bg" src="01_backgrounds/64.png" alt="">
           <div class="door">
             <img src="02_motions/63_door.png" alt="문">
+          </div>
+          <div class="delphinium-night">
+            <img src="02_motions/delphinium_night.svg" alt="델피니움">
           </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
@@ -10310,6 +10339,9 @@
           <img class="bg" src="01_backgrounds/65.png" alt="">
           <div class="door">
             <img src="02_motions/63_door.png" alt="문">
+          </div>
+          <div class="delphinium-night">
+            <img src="02_motions/delphinium_night.svg" alt="델피니움">
           </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
