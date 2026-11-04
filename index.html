@@ -6886,6 +6886,17 @@
       image-rendering: high-quality;
     }
 
+    /* 66번 장면 (68페이지): 대화창 영역을 제외한 상단 영역에 #869CFF, 곱하기(multiply), 투명도 60% 필터 적용 */
+    .scene-66 .scene-color-filter {
+      background-color: #869CFF;
+      opacity: 0.6;
+      mix-blend-mode: multiply;
+    }
+    .scene-66 .scene-color-filter.with-dialog,
+    .scene-66:has(.dialog-wrap) .scene-color-filter {
+      height: 809px;
+    }
+
     /* ==============================================================
        [S2 67·68장면] 메리골드 줄기에 묶인 쪽지를 발견하고 확인하는 씬 ("You: 엇, 뭐야." / "You: 쪽지가 있었네...?")
        ============================================================== */
