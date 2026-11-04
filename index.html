@@ -5991,13 +5991,13 @@
     /* Paper 그래픽 (48번 장면: 일어선 비둘기 왼손 책 커버 위치 정밀 일치) */
     .scene-48 .book-paper {
       position: absolute;
-      left: 483.5px;
-      top: 359.5px;
+      left: 474px;
+      top: 359px;
       width: 140px;
       height: 48px;
       pointer-events: none;
       z-index: 10;
-      transform-origin: 74.5px 47px; /* 하얀 내지 V-Crease 꼭지점 고정 */
+      transform-origin: 74.5px 47px; /* 하얀 내지 V-Crease 꼭지점 = 파란 북커버 중심(x: 548.5px, y: 406px) 일치 */
       animation: paperSway48 2.6s ease-in-out infinite alternate;
     }
 
@@ -6010,8 +6010,8 @@
     }
 
     @keyframes paperSway48 {
-      0%   { transform: rotate(-2.5deg); }
-      100% { transform: rotate(1.8deg); }
+      0%   { transform: rotate(-2.0deg); }
+      100% { transform: rotate(2.0deg); }
     }
 
     /* Steam 그래픽 (48번 장면: 일어선 비둘기 오른손 머그잔 위 위치 정밀 일치) */
