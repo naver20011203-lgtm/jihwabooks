@@ -2,6 +2,39 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <!-- 브라우저 캐시 방지 메타태그 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- 새 세션/새 링크 접속 시 최신 버전 자동 새로고침 및 캐시 버스팅 -->
+  <script>
+    (function () {
+      try {
+        const sessionKey = '__jihwa_session_refreshed__';
+        const hasSession = sessionStorage.getItem(sessionKey);
+        // 새 탭/새 링크로 열었을 때 최신 변경사항을 가져오기 위한 1회 자동 새로고침
+        if (!hasSession) {
+          sessionStorage.setItem(sessionKey, '1');
+          const url = new URL(window.location.href);
+          const currentT = url.searchParams.get('_t');
+          const now = Date.now().toString();
+          if (!currentT || Math.abs(parseInt(currentT, 10) - parseInt(now, 10)) > 5000) {
+            url.searchParams.set('_t', now);
+            window.location.replace(url.toString());
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 모바일/PC 뒤로가기 또는 브라우저 캐시(bfcache) 복원 시 자동 새로고침
+      window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+          window.location.reload();
+        }
+      });
+    })();
+  </script>
   <!-- 전역 무한루프 배경음악 (대기화면 시작 전 최우선 로드 및 즉각 재생) -->
   <script>
     (function () {
