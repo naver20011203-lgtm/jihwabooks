@@ -5953,7 +5953,7 @@
       100% { transform: rotate(4.5deg); }
     }
 
-    /* 3. Steam 그래픽 (머그잔 위 3개 연기 줄 분할 + 느린 프레임(steps) + 불규칙한 높이) */
+    /* 3. Steam 그래픽 (머그잔 위 steam 그래픽 위치) */
     .scene-47 .mug-steam-wrap {
       position: absolute;
       left: 970px;
@@ -5962,98 +5962,7 @@
       height: 40px;
       pointer-events: none;
       z-index: 10;
-    }
-
-    .scene-47 .steam-line {
-      position: absolute;
-      bottom: 0;
-      width: 14px;
-      height: 40px;
       overflow: visible;
-      transform-origin: 50% 100%;
-    }
-
-    .scene-47 .steam-line.line-1 {
-      left: 0px;
-      animation: steamRise1 5.4s steps(14) infinite;
-    }
-
-    .scene-47 .steam-line.line-2 {
-      left: 18px;
-      animation: steamRise2 6.0s steps(16) infinite;
-      animation-delay: 1.5s;
-    }
-
-    .scene-47 .steam-line.line-3 {
-      left: 36px;
-      animation: steamRise3 5.6s steps(15) infinite;
-      animation-delay: 3.0s;
-    }
-
-    /* 1번 연기 줄: 좌측 (잔잔한 높이 약 -19px) */
-    @keyframes steamRise1 {
-      0% {
-        transform: translate3d(0, 2px, 0) scale(0.9);
-        opacity: 0;
-      }
-      20% {
-        opacity: 0.7;
-      }
-      50% {
-        transform: translate3d(-1px, -9px, 0) scale(0.98);
-        opacity: 0.6;
-      }
-      80% {
-        opacity: 0.25;
-      }
-      100% {
-        transform: translate3d(-2px, -19px, 0) scale(1.05);
-        opacity: 0;
-      }
-    }
-
-    /* 2번 연기 줄 (가운데): 잔잔한 높이 (약 -23px) */
-    @keyframes steamRise2 {
-      0% {
-        transform: translate3d(0, 2px, 0) scale(0.92);
-        opacity: 0;
-      }
-      18% {
-        opacity: 0.75;
-      }
-      45% {
-        transform: translate3d(1px, -11px, 0) scale(1.02);
-        opacity: 0.65;
-      }
-      75% {
-        opacity: 0.3;
-      }
-      100% {
-        transform: translate3d(1px, -23px, 0) scale(1.08);
-        opacity: 0;
-      }
-    }
-
-    /* 3번 연기 줄 (우측): 잔잔한 높이 (약 -20px) */
-    @keyframes steamRise3 {
-      0% {
-        transform: translate3d(0, 2px, 0) scale(0.88);
-        opacity: 0;
-      }
-      22% {
-        opacity: 0.7;
-      }
-      50% {
-        transform: translate3d(1px, -10px, 0) scale(0.98);
-        opacity: 0.55;
-      }
-      80% {
-        opacity: 0.25;
-      }
-      100% {
-        transform: translate3d(1.5px, -20px, 0) scale(1.05);
-        opacity: 0;
-      }
     }
   
     /* ==============================================================
@@ -6108,14 +6017,17 @@
     /* Steam 그래픽 (48번 장면: 일어선 비둘기 오른손 머그잔 위 위치 정밀 일치) */
     .scene-48 .mug-steam-wrap {
       position: absolute;
-      left: 968px;
-      top: 549px;
+      left: 970px;
+      top: 542px;
       width: 50px;
       height: 40px;
       pointer-events: none;
       z-index: 10;
+      overflow: visible;
     }
 
+    /* 48, 50번 장면 공통 머그잔 steam 그래픽 및 살짝 꿈틀거리는 물결 모션 */
+    .scene-47 .steam-line,
     .scene-48 .steam-line {
       position: absolute;
       bottom: 0;
@@ -6123,87 +6035,103 @@
       height: 40px;
       overflow: visible;
       transform-origin: 50% 100%;
-    }
-
-    .scene-48 .steam-line.line-1 {
-      left: 0px;
-      animation: steamRise1 5.4s steps(14) infinite;
-    }
-
-    .scene-48 .steam-line.line-2 {
-      left: 18px;
-      animation: steamRise2 6.0s steps(16) infinite;
-      animation-delay: 1.5s;
-    }
-
-    .scene-48 .steam-line.line-3 {
-      left: 36px;
-      animation: steamRise3 5.6s steps(15) infinite;
-      animation-delay: 3.0s;
-    }
-
-  
-    /* ==============================================================
-       [S2 47장면] 찻잔 김 (반투명 회색 김 줄기가 부드럽게 피어오름)
-       ============================================================== */
-    .scene-47 .mug-steam-wrap,
-    .scene-48 .mug-steam-wrap {
-      overflow: visible;
-    }
-
-    .scene-47 .steam-haze,
-    .scene-48 .steam-haze {
-      position: absolute;
-      left: 2px;
-      bottom: -4px;
-      width: 46px;
-      height: 16px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(210, 210, 215, 0.35) 0%, rgba(210, 210, 215, 0) 70%);
-      filter: blur(2px);
-      animation: steamHaze 4.8s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    .scene-47 .steam-wisp,
-    .scene-48 .steam-wisp {
-      position: absolute;
-      bottom: 0;
-      width: 16px;
-      height: 44px;
-      overflow: visible;
-      fill: rgb(205, 205, 212);
-      filter: blur(1.1px);
-      transform-origin: 50% 100%;
-      opacity: 0;
       pointer-events: none;
       will-change: transform, opacity;
     }
 
-    .scene-47 .steam-wisp.wisp-1, .scene-48 .steam-wisp.wisp-1 { left: 6px;  animation: wispRiseA 4.6s ease-out infinite; }
-    .scene-47 .steam-wisp.wisp-2, .scene-48 .steam-wisp.wisp-2 { left: 18px; animation: wispRiseB 5.4s ease-out infinite 1.2s; }
-    .scene-47 .steam-wisp.wisp-3, .scene-48 .steam-wisp.wisp-3 { left: 28px; animation: wispRiseA 5.0s ease-out infinite 2.5s; }
-    .scene-47 .steam-wisp.wisp-4, .scene-48 .steam-wisp.wisp-4 { left: 14px; animation: wispRiseB 6.0s ease-out infinite 3.6s; }
-
-    @keyframes wispRiseA {
-      0%   { transform: translate3d(0, 6px, 0) scale(0.55, 0.45) skewX(0deg);  opacity: 0; }
-      20%  { opacity: 0.5; }
-      50%  { transform: translate3d(-2px, -10px, 0) scale(0.9, 0.85) skewX(5deg); opacity: 0.42; }
-      80%  { opacity: 0.18; }
-      100% { transform: translate3d(3px, -28px, 0) scale(1.2, 1.1) skewX(-7deg); opacity: 0; }
+    .scene-47 .steam-line svg,
+    .scene-48 .steam-line svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
     }
 
-    @keyframes wispRiseB {
-      0%   { transform: translate3d(0, 6px, 0) scale(-0.55, 0.45) skewX(0deg);  opacity: 0; }
-      22%  { opacity: 0.45; }
-      50%  { transform: translate3d(2px, -9px, 0) scale(-0.9, 0.85) skewX(-5deg); opacity: 0.38; }
-      80%  { opacity: 0.15; }
-      100% { transform: translate3d(-3px, -26px, 0) scale(-1.2, 1.1) skewX(6deg); opacity: 0; }
+    .scene-47 .steam-line path,
+    .scene-48 .steam-line path {
+      stroke: #8C8C8C;
+      stroke-width: 3px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
     }
 
-    @keyframes steamHaze {
-      0%, 100% { opacity: 0.5; transform: scale(0.95, 0.9); }
-      50%      { opacity: 0.9; transform: scale(1.05, 1.1); }
+    .scene-47 .steam-line.line-1,
+    .scene-48 .steam-line.line-1 {
+      left: 0px;
+      animation: steamWave1 3.4s ease-in-out infinite alternate;
+    }
+
+    .scene-47 .steam-line.line-2,
+    .scene-48 .steam-line.line-2 {
+      left: 19.4px;
+      animation: steamWave2 4.0s ease-in-out infinite alternate 0.5s;
+    }
+
+    .scene-47 .steam-line.line-3,
+    .scene-48 .steam-line.line-3 {
+      left: 37.9px;
+      animation: steamWave3 3.6s ease-in-out infinite alternate 1.1s;
+    }
+
+    /* 1번 김 줄기 (좌측): 부드러운 물결 파동 및 일렁임 */
+    @keyframes steamWave1 {
+      0% {
+        transform: translate3d(0, 0, 0) skewX(-4deg) rotate(-1deg) scale(0.97, 0.96);
+        opacity: 0.72;
+      }
+      30% {
+        transform: translate3d(-1px, -3px, 0) skewX(3.5deg) rotate(1.5deg) scale(1.02, 1.02);
+        opacity: 0.92;
+      }
+      65% {
+        transform: translate3d(0.5px, -6px, 0) skewX(-3deg) rotate(-0.5deg) scale(0.99, 1.06);
+        opacity: 0.82;
+      }
+      100% {
+        transform: translate3d(-1.5px, -4px, 0) skewX(4.5deg) rotate(2deg) scale(1.03, 1.01);
+        opacity: 0.78;
+      }
+    }
+
+    /* 2번 김 줄기 (중앙): 조금 더 높게 피어오르는 물결 파동 */
+    @keyframes steamWave2 {
+      0% {
+        transform: translate3d(0, 0, 0) skewX(3.5deg) rotate(1deg) scale(1.01, 0.98);
+        opacity: 0.75;
+      }
+      35% {
+        transform: translate3d(1px, -4px, 0) skewX(-4.5deg) rotate(-2deg) scale(0.98, 1.04);
+        opacity: 0.95;
+      }
+      70% {
+        transform: translate3d(-0.5px, -7px, 0) skewX(3deg) rotate(1deg) scale(1.03, 1.07);
+        opacity: 0.85;
+      }
+      100% {
+        transform: translate3d(1.2px, -3px, 0) skewX(-3.5deg) rotate(-1.5deg) scale(0.99, 1.02);
+        opacity: 0.8;
+      }
+    }
+
+    /* 3번 김 줄기 (우측): 잔잔하게 일렁이는 물결 파동 */
+    @keyframes steamWave3 {
+      0% {
+        transform: translate3d(0, 0, 0) skewX(-3deg) rotate(-1.5deg) scale(0.98, 0.97);
+        opacity: 0.7;
+      }
+      28% {
+        transform: translate3d(0.8px, -3.5px, 0) skewX(4deg) rotate(1.8deg) scale(1.02, 1.03);
+        opacity: 0.9;
+      }
+      62% {
+        transform: translate3d(-1px, -5.5px, 0) skewX(-3.5deg) rotate(-1deg) scale(0.97, 1.05);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate3d(0.5px, -2.5px, 0) skewX(3deg) rotate(1.2deg) scale(1.01, 1.0);
+        opacity: 0.75;
+      }
     }
   
     /* ========== 우측 하단 페이지 번호 더블클릭 → 대사창 아래쪽 직사각형 칸(34px) 내 얇은 척도 바 ========== */
@@ -9362,11 +9290,15 @@
             <img src="02_motions/47_paper.png" alt="">
           </div>
           <div class="mug-steam-wrap">
-            <div class="steam-haze"></div>
-            <svg class="steam-wisp wisp-1" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-2" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-3" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-4" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
+            <div class="steam-line line-1">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
+            <div class="steam-line line-2">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
+            <div class="steam-line line-3">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
           </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
@@ -9489,11 +9421,15 @@
             <img src="02_motions/48_paper.png" alt="">
           </div>
           <div class="mug-steam-wrap">
-            <div class="steam-haze"></div>
-            <svg class="steam-wisp wisp-1" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-2" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-3" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
-            <svg class="steam-wisp wisp-4" viewBox="0 0 24 64"><path d="M12 63 C6 56 6 48 11 41 C16 34 17 26 12 19 C9 14 9 8 13 2 C14 1 15 1 15 2 C13 8 14 13 16 18 C21 26 20 35 15 42 C11 48 11 56 13 62 C13 63.5 12.5 63.5 12 63 Z"/></svg>
+            <div class="steam-line line-1">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
+            <div class="steam-line line-2">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
+            <div class="steam-line line-3">
+              <svg viewBox="0 0 14 40"><path d="M7.32096 1.5C7.62084 1.99625 8.41525 3.31684 9.31886 4.96707C10.0651 6.32986 10.2792 8.23574 10.4715 10.0865C10.6637 11.9371 10.0067 13.2976 9.30531 14.5186C8.64584 15.6667 7.45832 16.9524 6.51933 18.1453C5.59811 19.3155 4.87554 20.4555 3.85393 22.2101C2.67379 24.2369 2.12863 26.0615 1.68838 27.6927C1.23287 29.3805 1.6651 31.5459 2.32715 33.1262C2.85964 34.3971 3.92703 35.2838 4.94264 36.4509C5.19835 36.7187 5.42735 36.9245 5.71669 37.1102C6.00602 37.2958 6.34875 37.4551 7.52891 37.9637"/></svg>
+            </div>
           </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap red">
