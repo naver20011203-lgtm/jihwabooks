@@ -6576,6 +6576,24 @@
       image-rendering: high-quality;
     }
 
+    .scene-59 .bg-58 {
+      z-index: 1;
+      display: block;
+    }
+
+    .scene-59 .bg-59 {
+      z-index: 2;
+      display: none;
+    }
+
+    .scene-59.hand-flower .bg-58 {
+      display: none;
+    }
+
+    .scene-59.hand-flower .bg-59 {
+      display: block;
+    }
+
     .scene-59 .pigeon-pupil {
       position: absolute;
       left: 787.5px;
@@ -10032,13 +10050,14 @@
 
 
     /* ==============================================================
-       장면 59 (꽃을 건네며 검은 눈동자가 58번 위치에서 카메라 쪽으로 이동하는 비둘기)
+       장면 59 (60페이지(58번) 이미지에서 눈 먼저 카메라로 이동 -> 61페이지(59번) 이미지로 꽃 건네기)
        - 대사: 'P: 아, 그리고 이건 손님께 드리는 선물입니다.'
        ============================================================== */
     window.SCENES[59] = {
       mount(el, app) {
         el.innerHTML = `
-          <img class="bg" src="01_backgrounds/59.png" alt="">
+          <img class="bg bg-58" src="01_backgrounds/58_eyeless_backup.png" alt="">
+          <img class="bg bg-59" src="01_backgrounds/59.png" alt="">
           <div class="pigeon-pupil">
             <img src="02_motions/59_eye.png" alt="">
           </div>
@@ -10056,43 +10075,63 @@
         const speakerEl = el.querySelector('.speaker');
         const bodyEl = el.querySelector('.dialog-body');
 
-        // 58번 장면의 눈동자 위치에서 시작해 카메라(흰자 정중앙) 쪽으로 이동
         let isEyeDone = false;
-        const lookTimer = setTimeout(() => {
+        let isFlowerDone = false;
+        let typing = null;
+
+        // 1단계: 60페이지(58번) 이미지 상태에서 눈동자가 카메라 쪽으로 이동 (0.25초 뒤 시작, 0.65초 동안 이동)
+        const eyeTimer = setTimeout(() => {
           if (pupilEl) {
-            isEyeDone = true;
             pupilEl.classList.add('look-camera');
           }
-        }, 350);
+        }, 250);
 
-        // 레드 대화창 규칙: P: (#D13D79) / 대사 (#FFFAE1, 48px, DungGeunMo)
-        const typing = typeDialog(
-          speakerEl,
-          'P: ',
-          bodyEl,
-          '아, 그리고 이건 손님께 드리는 선물입니다.',
-          45,
-          350
-        );
+        const triggerHandFlower = () => {
+          if (isFlowerDone) return;
+          isEyeDone = true;
+          isFlowerDone = true;
+          clearTimeout(eyeTimer);
+          clearTimeout(flowerTimer);
+          if (pupilEl) pupilEl.classList.add('look-camera');
+          el.classList.add('hand-flower');
+
+          if (!typing) {
+            typing = typeDialog(
+              speakerEl,
+              'P: ',
+              bodyEl,
+              '아, 그리고 이건 손님께 드리는 선물입니다.',
+              45,
+              100
+            );
+          }
+        };
+
+        // 2단계: 눈 이동 완료 후 61페이지(59번) 이미지로 전환하여 꽃을 건네며 대사 타이핑 시작
+        const flowerTimer = setTimeout(() => {
+          triggerHandFlower();
+        }, 900);
 
         const onClick = (e) => {
           if (e.button !== 0) return;
-          if (!typing.isFinished() || !isEyeDone) {
-            typing.finish();
-            isEyeDone = true;
-            clearTimeout(lookTimer);
-            if (pupilEl) pupilEl.classList.add('look-camera');
-          } else {
-            app.next('fade');
+          if (!isFlowerDone) {
+            triggerHandFlower();
+            return;
           }
+          if (typing && !typing.isFinished()) {
+            typing.finish();
+            return;
+          }
+          app.next('fade');
         };
 
         el.addEventListener('click', onClick);
 
         return {
           unmount() {
-            clearTimeout(lookTimer);
-            typing.stop();
+            clearTimeout(eyeTimer);
+            clearTimeout(flowerTimer);
+            if (typing) typing.stop();
             el.removeEventListener('click', onClick);
           },
         };
