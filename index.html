@@ -6396,8 +6396,21 @@
       pointer-events: none;
       z-index: 10;
       transform: translate3d(0, 0, 0);
-      transition: transform 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
       will-change: transform;
+    }
+
+    /* 대사에 얽매이지 않고 일정한 속도로 자연스럽고 천천히 개폐되는 립 모션 */
+    .scene-55 .pigeon-lip.talking {
+      animation: pigeonLipTalk 0.52s ease-in-out infinite;
+    }
+
+    @keyframes pigeonLipTalk {
+      0%, 100% {
+        transform: translate3d(0, 0, 0);
+      }
+      50% {
+        transform: translate3d(0, 16.5px, 0);
+      }
     }
 
     .scene-55 .pigeon-lip img {
@@ -9738,35 +9751,34 @@
         const speakerEl = el.querySelector('.speaker');
         const bodyEl = el.querySelector('.dialog-body');
 
-        // '안 오고 뭐 하십니까?' 4프레임 호흡의 자연스러운 구화(口話) 립싱크 모션
-        // 기존의 42ms 급격한 떨림(부르르 현상)을 완전히 제거하고,
-        // 최대 입 벌림 폭을 12.6px에서 16.5px로 살짝 더 시원하게 확장(+4px)하여 4프레임 템포로 자연스럽게 개폐
-        // 1. '안 오고' (i=4~7) -> 16.5px 크게 개방 후 안정적으로 유지
-        // 2. '뭐' (i=9) -> 16.5px 크게 개방
-        // 3. '하십' (i=11~12) -> '하'에서 16.5px 개방 후 '십'의 'ㅂ' 양순 폐쇄음에서 0.5px로 닫힘
-        // 4. '니까?' (i=13~15) -> '까'에서 16.5px 개방 후 문장 마침표/물음표에서 0px로 완벽히 다묾
-        const lipOffsets = {
-          1: 0,
-          2: 0,
-          3: 0,
-          4: 16.5,  // '안' (1프레이즈 시작: 시원하게 열림)
-          5: 15.0,  // ' '  (호흡 유지)
-          6: 16.5,  // '오' (열림 유지)
-          7: 10.0,  // '고' ('고' 발음에서 살짝 오므림)
-          8: 3.5,   // ' '  (어절 간 짧은 휴지)
-          9: 16.5,  // '뭐' (2프레이즈: 크게 열림)
-          10: 3.5,  // ' '  (어절 간 짧은 휴지)
-          11: 16.5, // '하' (3프레이즈 시작: 크게 열림)
-          12: 0.5,  // '십' ('ㅂ' 받침에서 입술 완전히 닫힘)
-          13: 12.5, // '니' (4프레이즈: 열리기 시작)
-          14: 16.5, // '까' (최대 열림)
-          15: 0     // '?'  (발화 종료 후 단정하게 다묾)
-        };
+        // 대사에 음절별로 맞추지 않고, 일정한 속도로 자연스럽고 천천히 개폐되는 립 모빙
+        let isTalking = false;
 
-        const setLipY = (dy) => {
-          if (!lipEl) return;
-          lipEl.style.transform = `translate3d(0, ${dy}px, 0)`;
-        };
+        function startTalking() {
+          if (isTalking || !lipEl) return;
+          isTalking = true;
+          lipEl.style.transition = 'none';
+          lipEl.classList.add('talking');
+        }
+
+        function stopTalking() {
+          if (!isTalking || !lipEl) return;
+          isTalking = false;
+          try {
+            const currentTransform = window.getComputedStyle(lipEl).transform;
+            lipEl.classList.remove('talking');
+            lipEl.style.transition = 'none';
+            if (currentTransform && currentTransform !== 'none') {
+              lipEl.style.transform = currentTransform;
+            }
+            void lipEl.offsetHeight; // reflow 강제하여 자연스러운 감속 보장
+            lipEl.style.transition = 'transform 0.25s ease-out';
+            lipEl.style.transform = 'translate3d(0, 0, 0)';
+          } catch (e) {
+            lipEl.classList.remove('talking');
+            lipEl.style.transform = 'translate3d(0, 0, 0)';
+          }
+        }
 
         // 레드 대화창 규칙: P: (#D13D79) / 대사 (#FFFAE1, 48px, DungGeunMo)
         const typing = typeDialog(
@@ -9778,12 +9790,13 @@
           350,
           {
             onChar(charIdx) {
-              if (charIdx in lipOffsets) {
-                setLipY(lipOffsets[charIdx]);
+              // 화자('P: ', 3글자) 후 본 대사가 타이핑되는 시점부터 일정한 속도로 차분하게 개폐 시작
+              if (charIdx >= 4 && !isTalking) {
+                startTalking();
               }
             },
             onComplete() {
-              setLipY(0);
+              stopTalking();
             }
           }
         );
@@ -9791,8 +9804,8 @@
         const onClick = (e) => {
           if (e.button !== 0) return;
           if (!typing.isFinished()) {
+            stopTalking();
             typing.finish();
-            setLipY(0);
           } else {
             app.next('fade');
           }
@@ -9802,6 +9815,7 @@
 
         return {
           unmount() {
+            stopTalking();
             typing.stop();
             el.removeEventListener('click', onClick);
           },
