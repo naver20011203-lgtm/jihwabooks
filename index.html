@@ -9126,13 +9126,66 @@
     };
 
     /* ==============================================================
-       장면 47 (서점 비둘기의 독서 시간)
+       장면 47 (You 대사: 'You: 아, 저기...음......')
+       - 초록 대화창
+       ============================================================== */
+    window.SCENES[47] = {
+      mount(el, app) {
+        el.innerHTML = `
+          <img class="bg" src="01_backgrounds/47_1.png" alt="">
+          <div class="scene-clear-filter"></div>
+          <div class="dialog-wrap green">
+            <img class="dialog-bg" src="02_motions/03 ,05, 07, 13, 36 Green text background .png" alt="">
+            <div class="dialog-text">
+              <span class="speaker"></span>
+              <span class="dialog-body"></span>
+            </div>
+          </div>
+        `;
+
+        const speakerEl = el.querySelector('.speaker');
+        const bodyEl = el.querySelector('.dialog-body');
+
+        // 그린 대화창 규칙: You: (#308DA4) / 대사 (#FFFAE1, 48px, DungGeunMo)
+        const typing = typeDialog(
+          speakerEl,
+          'You: ',
+          bodyEl,
+          '아, 저기...음......',
+          45,
+          350
+        );
+
+        const onClick = (e) => {
+          if (e.button !== 0) return;
+          if (!typing.isFinished()) {
+            typing.finish();
+          } else {
+            app.next('fade');
+          }
+        };
+
+        el.addEventListener('click', onClick);
+
+        return {
+          unmount() {
+            typing.stop();
+            el.removeEventListener('click', onClick);
+          },
+        };
+      },
+    };
+
+    /* ==============================================================
+       장면 48 / 47_1 (서점 비둘기의 독서 시간)
+       - 대사: 'P: 벌써 가시는 겁니까?'
        - 눈 그래픽이 살짝 아래를 보고 있다가 대사가 입력되면서 같이 정면을 봄
        - paper 그래픽이 파란 책 커버 중앙에 위치하여 약간 좌우로 움직임
        - steam 파일이 머그잔 위에서 김이 펄펄 피어오름
        ============================================================== */
-    window.SCENES[47] = {
+    window.SCENES['47_1'] = {
       mount(el, app) {
+        el.classList.add('scene-47');
         el.innerHTML = `
           <img class="bg" src="01_backgrounds/47.png" alt="">
           <div class="character-eyes looking-down">
@@ -9192,58 +9245,6 @@
         return {
           unmount() {
             clearTimeout(lookTimer);
-            typing.stop();
-            el.removeEventListener('click', onClick);
-          },
-        };
-      },
-    };
-
-    /* ==============================================================
-       장면 47_1 (47 다음 장면: You 대사)
-       - 대사: 'You: 아, 저기...음......'
-       - 초록 대화창
-       ============================================================== */
-    window.SCENES['47_1'] = {
-      mount(el, app) {
-        el.innerHTML = `
-          <img class="bg" src="01_backgrounds/47_1.png" alt="">
-          <div class="scene-clear-filter"></div>
-          <div class="dialog-wrap green">
-            <img class="dialog-bg" src="02_motions/03 ,05, 07, 13, 36 Green text background .png" alt="">
-            <div class="dialog-text">
-              <span class="speaker"></span>
-              <span class="dialog-body"></span>
-            </div>
-          </div>
-        `;
-
-        const speakerEl = el.querySelector('.speaker');
-        const bodyEl = el.querySelector('.dialog-body');
-
-        // 그린 대화창 규칙: You: (#308DA4) / 대사 (#FFFAE1, 48px, DungGeunMo)
-        const typing = typeDialog(
-          speakerEl,
-          'You: ',
-          bodyEl,
-          '아, 저기...음......',
-          45,
-          350
-        );
-
-        const onClick = (e) => {
-          if (e.button !== 0) return;
-          if (!typing.isFinished()) {
-            typing.finish();
-          } else {
-            app.next('fade');
-          }
-        };
-
-        el.addEventListener('click', onClick);
-
-        return {
-          unmount() {
             typing.stop();
             el.removeEventListener('click', onClick);
           },
