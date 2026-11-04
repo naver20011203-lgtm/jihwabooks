@@ -3526,7 +3526,7 @@
             if (!container.querySelector('.scene-counter')) {
               const counterEl = document.createElement('div');
               counterEl.className = 'scene-counter';
-              counterEl.textContent = `${displayNum}/71`;
+              counterEl.textContent = `${displayNum}/72`;
               counterEl.title = '';
               ['mousedown', 'pointerdown', 'click'].forEach((ev) => {
                 counterEl.addEventListener(ev, (e) => e.stopPropagation());
@@ -3670,7 +3670,7 @@
       // 마우스 우클릭 시 이전 장면으로 이동
       window.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        if (current && (current.n > 1 || current.n === '47_1')) {
+        if (current && (current.n > 1 || current.n === '47_1' || current.n === '48_1')) {
           api.prev('fade');
         }
       });
@@ -5767,6 +5767,29 @@
       image-rendering: high-quality;
     }
 
+    /* ==============================================================
+       [S2 48_1장면] 48 다음 장면: You 대사
+       ============================================================== */
+    .scene-48_1 {
+      position: absolute;
+      inset: 0;
+      width: 1366px;
+      height: 1024px;
+      overflow: hidden;
+    }
+
+    .scene-48_1 .bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+      pointer-events: none;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: high-quality;
+    }
+
     /* 1. 눈 그래픽 (398x73 원본 고화질 -> 정면 응시와 아래 책 응시 모션) */
     .scene-47 .character-eyes {
       position: absolute;
@@ -6965,7 +6988,7 @@
   </script>
   <script type="text/plain" id="s2-js-data">
 
-    window.TOTAL_SCENES = 71; // 최종 완성 시 총 장면 수로 일괄 변경 가능
+    window.TOTAL_SCENES = 72; // 최종 완성 시 총 장면 수로 일괄 변경 가능
     /* ==============================================================
        [S2 브릿지 시작 장면] 장면 20 (서점 카운터 비둘기 맞이 씬)
        ============================================================== */
@@ -9254,6 +9277,59 @@
     window.SCENES[47.5] = window.SCENES['47_1'];
     window.SCENES['47-1'] = window.SCENES['47_1'];
 
+    /* ==============================================================
+       장면 49 / 48_1 (You 대사: 'You: ...아, 네! 이만 가보려고요.')
+       - 초록 대화창
+       ============================================================== */
+    window.SCENES['48_1'] = {
+      mount(el, app) {
+        el.innerHTML = `
+          <img class="bg" src="01_backgrounds/48_1.png" alt="">
+          <div class="scene-clear-filter"></div>
+          <div class="dialog-wrap green">
+            <img class="dialog-bg" src="02_motions/03 ,05, 07, 13, 36 Green text background .png" alt="">
+            <div class="dialog-text">
+              <span class="speaker"></span>
+              <span class="dialog-body"></span>
+            </div>
+          </div>
+        `;
+
+        const speakerEl = el.querySelector('.speaker');
+        const bodyEl = el.querySelector('.dialog-body');
+
+        // 그린 대화창 규칙: You: (#308DA4) / 대사 (#FFFAE1, 48px, DungGeunMo)
+        const typing = typeDialog(
+          speakerEl,
+          'You: ',
+          bodyEl,
+          '...아, 네! 이만 가보려고요.',
+          45,
+          350
+        );
+
+        const onClick = (e) => {
+          if (e.button !== 0) return;
+          if (!typing.isFinished()) {
+            typing.finish();
+          } else {
+            app.next('fade');
+          }
+        };
+
+        el.addEventListener('click', onClick);
+
+        return {
+          unmount() {
+            typing.stop();
+            el.removeEventListener('click', onClick);
+          },
+        };
+      },
+    };
+    window.SCENES[48.5] = window.SCENES['48_1'];
+    window.SCENES['48-1'] = window.SCENES['48_1'];
+
     
     /* ==============================================================
        장면 48 (일어선 비둘기)
@@ -11204,7 +11280,7 @@
       let fadeTimer = null;
 
       function isIndoorRainScene(n) {
-        if (n === 'reader' || n === '47_1' || n === '47-1' || n === 47.5) return true;
+        if (n === 'reader' || n === '47_1' || n === '47-1' || n === 47.5 || n === '48_1' || n === '48-1' || n === 48.5) return true;
         const pageNum = (typeof n === 'number' && n >= 1 && n <= 20) ? (n + 20) : n;
         return typeof pageNum === 'number' && pageNum >= 21 && pageNum <= 57;
       }
@@ -11296,7 +11372,7 @@
         current = { n, el, scene: null };
         current.scene = def.mount(el, api) || {};
 
-        // 대화창 맨 아래 줄 또는 대화창 없는 화면의 최상단 레이어에 '현재장면/71' 번호 표기 자동 부착
+        // 대화창 맨 아래 줄 또는 대화창 없는 화면의 최상단 레이어에 '현재장면/72' 번호 표기 자동 부착
         // 단, 책 읽는 화면(독서 모드)은 화면 넘버링에서 완전 제외
         const isReader = (n === 'reader' || def.isReader === true || el.classList.contains('scene-reader'));
         if (!isReader) {
@@ -11308,12 +11384,15 @@
           if (window.SCENES['47_1']) {
             navList.push({ key: '47_1', pageNum: navList.length + 21 });
           }
+          if (window.SCENES['48_1']) {
+            navList.push({ key: '48_1', pageNum: navList.length + 21 });
+          }
           for (let p = 48; p <= 70; p++) {
             if (window.SCENES[p]) navList.push({ key: p, pageNum: navList.length + 21 });
           }
           const curItem = navList.find((item) => item.key === n || String(item.key) === String(n));
           const curIdx = Math.max(0, navList.findIndex((item) => item.key === n || String(item.key) === String(n)));
-          const currentDisplayPage = curItem ? curItem.pageNum : (typeof n === 'number' ? n : 48);
+          const currentDisplayPage = curItem ? curItem.pageNum : (typeof n === 'number' ? n : 49);
           const maxIdx = Math.max(1, navList.length - 1);
           const ratio = curIdx / maxIdx;
           const fillWidth = (curIdx === maxIdx) ? '100%' : `${Math.max(10, Math.round(10 + (860 - 10) * ratio))}px`;
@@ -11322,7 +11401,7 @@
             if (!container.querySelector('.scene-counter')) {
               const counterEl = document.createElement('div');
               counterEl.className = 'scene-counter';
-              counterEl.textContent = `${currentDisplayPage}/71`;
+              counterEl.textContent = `${currentDisplayPage}/72`;
               counterEl.title = '';
               ['mousedown', 'pointerdown', 'click'].forEach((ev) => {
                 counterEl.addEventListener(ev, (e) => e.stopPropagation());
@@ -11502,12 +11581,14 @@
         goTo,
         next: (transition) => {
           if (current && (current.n === 47 || current.n === '47')) return goTo('47_1', transition);
-          if (current && (current.n === '47_1' || current.n === '47-1' || current.n === 47.5)) return goTo(48, transition);
+          if (current && (current.n === '47_1' || current.n === '47-1' || current.n === 47.5)) return goTo('48_1', transition);
+          if (current && (current.n === '48_1' || current.n === '48-1' || current.n === 48.5)) return goTo(48, transition);
           if (current && (current.n === 20 || current.n === 40)) return goTo(41, transition);
           return goTo(current.n + 1, transition);
         },
         prev: (transition) => {
-          if (current && current.n === 48) return goTo('47_1', transition);
+          if (current && current.n === 48) return goTo('48_1', transition);
+          if (current && (current.n === '48_1' || current.n === '48-1' || current.n === 48.5)) return goTo('47_1', transition);
           if (current && (current.n === '47_1' || current.n === '47-1' || current.n === 47.5)) return goTo(47, transition);
           if (current && current.n === 'reader') return goTo(46, transition);
           if (current && current.n === 41) return goTo(20, transition);
@@ -11543,7 +11624,7 @@
             return;
           }
         }
-        if (current && (current.n > 1 || current.n === '47_1')) {
+        if (current && (current.n > 1 || current.n === '47_1' || current.n === '48_1')) {
           api.prev('fade');
         }
       });
@@ -11678,10 +11759,10 @@
       }
 
       // ========== S1 19번 클릭 -> S2 1번으로 부드럽게 전환 ==========
-      window.__TRANSITION_TO_S2__ = function () {
+      window.__TRANSITION_TO_S2__ = function (targetScene = 1) {
         overlay.classList.add('active');
         setTimeout(() => {
-          launchS2(1);
+          launchS2(targetScene);
           setTimeout(() => {
             overlay.classList.remove('active');
           }, 80);
