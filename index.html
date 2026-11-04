@@ -6714,30 +6714,27 @@
       to   { transform: rotate(3.5deg) translateZ(0); }
     }
 
-    /* 팔 그래픽: X365.75, Y228.31 배치 (메리골드 위 레이어 z-index: 10) */
-    .scene-66 .night-arm {
+    /* ==============================================================
+       [S2 66장면 / 68페이지] 밤하늘 아래 메리골드를 바라보는 주인공 ("You: ‘반드시 오고야 말 행복’이라...")
+       ============================================================== */
+    .scene-66 {
       position: absolute;
-      left: 365.75px;
-      top: 228.31px;
-      width: 1000.25px;
-      height: 795.75px;
-      pointer-events: none;
-      z-index: 10;
+      inset: 0;
+      width: 1366px;
+      height: 1024px;
+      overflow: hidden;
     }
 
-    .scene-66 .night-arm img {
+    .scene-66 .bg {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
+      object-fit: fill;
       display: block;
+      pointer-events: none;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: high-quality;
-    }
-
-    /* 66번 장면 최상단 필터: #869CFF, multiply, 투명도 60% */
-    .scene-66 .scene-color-filter {
-      background-color: #869CFF;
-      opacity: 0.6;
-      mix-blend-mode: multiply;
     }
 
     /* ==============================================================
@@ -10375,21 +10372,13 @@
     };
 
     /* ==============================================================
-       장면 66 (밤하늘 아래 메리골드를 바라보는 주인공)
+       장면 66 (68페이지: 밤하늘 아래 메리골드를 바라보는 주인공)
        - 대사: 'You: ‘반드시 오고야 말 행복’이라...'
-       - 팔 그래픽(X365.75, Y228.31) + 팔 아래 주먹 쪽 메리골드 살랑임 모션
-       - 최상단 필터: #869CFF, multiply, 60%
        ============================================================== */
     window.SCENES[66] = {
       mount(el, app) {
         el.innerHTML = `
           <img class="bg" src="01_backgrounds/66.png" alt="">
-          <div class="marigold">
-            <img src="02_motions/66_marigold.png" alt="메리골드">
-          </div>
-          <div class="night-arm">
-            <img src="02_motions/66_arm.png" alt="팔">
-          </div>
           <div class="scene-clear-filter"></div>
           <div class="dialog-wrap green">
             <img class="dialog-bg" src="02_motions/03 ,05, 07, 13, 36 Green text background .png" alt="">
